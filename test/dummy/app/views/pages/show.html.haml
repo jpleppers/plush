@@ -1,0 +1,31 @@
+.columns
+  .column
+    %h2 Select tag
+    = select_tag 'test_model', options_from_collection_for_select(@tags, 'id', 'name'), placeholder: "Choose you're favorite color ...", data: {toggle: 'plush-autocomplete'}
+  .column
+
+.columns
+  .column
+    %h2 Select tag with source
+    = select_tag 'test_model', [], placeholder: "Choose you're favorite color ...", data: {toggle: 'plush-autocomplete', label: 'name', source: tags_path}
+
+.columns
+  .column
+    %h2 Select tag with source and query
+    = select_tag 'test_model', [], placeholder: "Choose you're favorite color ...", data: {toggle: 'plush-autocomplete', label: 'name', source: search_tags_path, query: ''}
+
+.columns
+  .column
+    = handlebars_template 'color_list_item' do
+      %li.plush-list-item.plush-colorbox{ data:{id: tstash('id'), label: tstash('label') }}
+        %a{href: '#'}
+          .colorbox{style: "background-color: #{tstash('color')}"}
+          %span.title= tstash('name')
+          %span.description
+            Hex code:
+            = tstash('color')
+
+    %h2 Select tag with custom template
+    = select_tag 'test_model', [], placeholder: "Choose you're favorite color ...", data: {toggle: 'plush-autocomplete', label: 'name', source: search_tags_path, query: '', template: 'color_list_item'}
+
+  .column

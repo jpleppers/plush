@@ -1,0 +1,40 @@
+html, body
+  padding: 0
+  margin: 0
+  background-color: #333
+
+*
+  font-family: Helvetica Neue, Arial, sans-serif
+  font-size: 14px  
+
+.page-container
+  margin: 30px auto
+  border: 1px solid #ddd
+  width: 960px
+  background-color: white
+  padding: 20px
+  min-height: 600px
+
+  h1
+    margin: 0 0 10px 0
+
+
+.columns
+  clear: both
+
+  .column
+    width: 48%
+    float: left
+
+    &:nth-child(even)
+      float: right
+
+pre
+  border: 1px solid $lightGray
+  background-color: $lighterGray
+  padding: 10px
+  max-width: 100%
+  overflow-x: scroll
+  text-shadow: 1px 1px 3px white
+  font-family: courier
+  +border-radius(5px)
