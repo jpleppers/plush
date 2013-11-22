@@ -1,9 +1,11 @@
 class @PlushAutocomplete
   constructor: (@element, @options={}) ->
     @element.hide()
-    @searchWithAjax = @element.data('query')?
-    @listTemplate = if @element.data('template')? then @element.data('template') else 'autocomplete_list_item'
-    @labelMethod = if @element.data('label')? then @element.data('label') else 'label'
+    @searchWithAjax = @options.query? || @element.data('query')?
+    @customTemplate = @options.template? || @element.data('template')?
+
+    @labelMethod = if (@options.label? || @element.data('label')?) then ( @options.label || @element.data('label')) else 'label'
+    @listTemplate = if @customTemplate then (@options.template || @element.data('template')) else 'autocomplete_list_item'
 
     @container = $.handlebar('autocomplete_container', {placeholder: @element.attr('placeholder')})
     @list = $('.plush-option-list', @container)
@@ -16,6 +18,11 @@ class @PlushAutocomplete
       @createListFromSource()
     else
       @createListFromOptions()
+
+    if @element.attr('placeholder')?
+      @element.prop('selectedIndex', -1)
+    else
+      @setOptionFor $('li:first-child', @list)
 
     @inputContainer.on 'click', '.plush-placeholder', (event) =>
       event.preventDefault()
@@ -40,17 +47,23 @@ class @PlushAutocomplete
 
     @list.on 'click', 'a', (event) =>
       event.preventDefault()
-      $anchor = $(event.currentTarget)
-      $listItem = $anchor.parents('li').last()
-      @placeholder.html $listItem.data('label')
-      @element.val $listItem.data('id')
-
+      @setOptionFor $(event.currentTarget).parents('li').last()
+      
     @element.after @container
 
   createListFromOptions: ->
     $('option', @element).each (index, item) =>
       $option = $(item)
-      @list.append $.handlebar(@listTemplate, {id: $option.val(), name: $option.html(), label: $option.html()})
+      options = if @customTemplate then @getAttributesFromOption(item) else {}
+      options.id = $option.val()
+      options.label = $option.html()
+      @list.append $.handlebar(@listTemplate, options)
+
+  getAttributesFromOption: (option) ->
+    options = {}
+    for attrOption in option.attributes    
+      options[attrOption.nodeName.replace(/^data-/, '')]= attrOption.nodeValue if attrOption.nodeName.match(/^data-/)
+    options
 
   createListFromSource: ->
     @inputContainer.addClass 'loading'
@@ -67,9 +80,15 @@ class @PlushAutocomplete
         $.each result, (index, item) =>
           item['label'] = item[@labelMethod] unless item['label']?
           @list.append $.handlebar(@listTemplate, item)
+          @element.append "<option value=#{item.id}>#{item.label}</option>"
 
     .always =>
       @inputContainer.removeClass 'loading'
+
+  setOptionFor: (listItem) ->
+    @placeholder.html listItem.data('label')
+    @element.val listItem.data('id')
+    @element.trigger 'change'
 
   delayedSearch: ->
     clearTimeout(@timer) if @timer?

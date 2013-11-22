@@ -14,9 +14,25 @@ html, body
   background-color: white
   padding: 20px
   min-height: 600px
+  +box-shadow(0 0 75px rgba(white, 0.3))
+
+  &:before, &:after
+    display: table
+    content: ""
+    line-height: 0
+  &:after
+    clear: both
+
+  h1, h2, h3, h4, h5
+    margin: 0.8em 0
 
   h1
-    margin: 0 0 10px 0
+    margin-top: 0
+    font-size: 3em
+    line-height: 1.6em
+    border-bottom: 1px dashed $gray
+  h2
+    font-size: 2.4em
 
 
 .columns
@@ -30,11 +46,11 @@ html, body
       float: right
 
 pre
+  margin-top: 40px
   border: 1px solid $lightGray
   background-color: $lighterGray
   padding: 10px
   max-width: 100%
-  overflow-x: scroll
   text-shadow: 1px 1px 3px white
   font-family: courier
   +border-radius(5px)
