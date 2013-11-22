@@ -1,0 +1,36 @@
+
+.plush-option-list
+  padding: 0px
+  width: 100%
+  max-height: 8 * 34px
+  overflow-y: scroll
+  border: 1px solid $lightGray
+  +box-sizing(border-box)
+  +border-bottom-radius($borderRadius)
+
+  > li
+    padding: 3px 5px
+    line-height: 2em
+    &:nth-child(even)
+      background-color: $listAlternate
+    
+    &:hover
+      background-color: $listHover
+      a, .title
+        color: white
+      .description
+        color: $lighterGray
+
+    a, .title
+      text-decoration: none
+      color: $darkerGray
+      display: block
+
+    .description
+      font-size: 12px
+      color: $gray
+      margin: 0
+      display: block
+
+  &.no-scroll
+    overflow: visible

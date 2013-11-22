@@ -3,6 +3,7 @@ class @PlushAutocomplete
     @element.hide()
     @searchWithAjax = @options.query? || @element.data('query')?
     @customTemplate = @options.template? || @element.data('template')?
+    @noResults = @options.no_results || @element.data('no-results') || 'No results found for: '
 
     @labelMethod = if (@options.label? || @element.data('label')?) then ( @options.label || @element.data('label')) else 'label'
     @listTemplate = if @customTemplate then (@options.template || @element.data('template')) else 'autocomplete_list_item'
@@ -44,6 +45,8 @@ class @PlushAutocomplete
             $element.parents('.plush-list-item').first().show()
           else
             $element.parents('.plush-list-item').first().hide()
+        if $('li:visible', @list).length == 0
+          @showNoResults()
 
     @list.on 'click', 'a', (event) =>
       event.preventDefault()
@@ -93,6 +96,17 @@ class @PlushAutocomplete
   delayedSearch: ->
     clearTimeout(@timer) if @timer?
     @timer = setTimeout @bind(@createListFromSource), 500
+
+  showNoResults: ->
+    msg = @noResults + @input.val()
+
+    if $('.plush-no-results', @list).length == 0
+      msgElement = $("<div class='plush-no-results'>#{@noResults}</div>")
+      @list.append msgElement
+    else
+      $('.plush-no-results', @list).html(msg)
+      $('.plush-no-results', @list).show()
+
 
   showInput: ->
     @placeholder.hide()

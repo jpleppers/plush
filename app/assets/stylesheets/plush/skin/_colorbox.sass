@@ -1,0 +1,27 @@
+.plush-colorbox 
+  .title
+    height: 22px
+    line-height: 22px
+    overflow: hidden
+    text-overflow: ellipsis
+
+  .description
+    height: 18px
+    line-height: 18px
+
+  .colorbox
+    border: 3px solid white
+    position: relative
+    +box-shadow(0 0 5px rgba(black, 0.4))
+    
+    &:before
+      content: ''
+      border-bottom: 10px solid white
+      border-left: 10px solid transparent
+      position: absolute
+      bottom: 0
+      right: 0
+
+
+.plush-option-list.color-list-item
+  max-height: 6 * 46px
