@@ -46,7 +46,7 @@
 .columns
   .column
     = handlebars_template 'color_list_item' do
-      %li.plush-list-item.plush-colorbox{ data:{id: tstash('id'), label: tstash('label') }}
+      %li.plush-list-item.plush-colorbox{ data:{value: dstash('value'), label: dstash('label') }}
         %a{href: '#'}
           .colorbox{style: "background-color: #{tstash('color')}"}
           %span.title= tstash('name')
@@ -59,6 +59,11 @@
   .column
     %pre
 
+%h2 Multi-select
+
 .columns
   .column
-    %h2 Multi-select 
+    %h3 Select tag
+    = select_tag 'color', options_from_collection_for_select(@tags, 'id', 'name'), data: {toggle: 'plush-autocomplete'}, multiple: 'multiple'
+  .column
+    %pre

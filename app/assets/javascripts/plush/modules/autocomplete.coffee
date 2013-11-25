@@ -1,6 +1,9 @@
 class @PlushAutocomplete
   constructor: (@element, @options={}) ->
     @element.hide()
+    @element.wrap('<div class="plush-container"></div>')
+    @container = @element.parent()
+
     @searchWithAjax = @options.query? || @element.data('query')?
     @customTemplate = @options.template? || @element.data('template')?
     @noResults = @options.no_results || @element.data('no-results') || 'No results found for: '
@@ -8,7 +11,8 @@ class @PlushAutocomplete
     @labelMethod = if (@options.label? || @element.data('label')?) then ( @options.label || @element.data('label')) else 'label'
     @listTemplate = if @customTemplate then (@options.template || @element.data('template')) else 'autocomplete_list_item'
 
-    @container = $.handlebar('autocomplete_container', {placeholder: @element.attr('placeholder')})
+    @container.append $.handlebar('autocomplete_container', {placeholder: @element.attr('placeholder')})
+
     @list = $('.plush-option-list', @container)
     @list.addClass @listTemplate.replace(/\_/g, '-')
     @inputContainer = $('.plush-input', @container)
@@ -52,13 +56,14 @@ class @PlushAutocomplete
       event.preventDefault()
       @setOptionFor $(event.currentTarget).parents('li').last()
       
-    @element.after @container
+    @container.after @container
+    return @
 
   createListFromOptions: ->
     $('option', @element).each (index, item) =>
       $option = $(item)
       options = if @customTemplate then @getAttributesFromOption(item) else {}
-      options.id = $option.val()
+      options.value = $option.val()
       options.label = $option.html()
       @list.append $.handlebar(@listTemplate, options)
 
@@ -78,19 +83,22 @@ class @PlushAutocomplete
     ajaxOptions.data = {query: @input.val()} if @searchWithAjax
 
     $.ajax(ajaxOptions).done (result, status, xhr) =>
-      @list.empty()
-      if result?
-        $.each result, (index, item) =>
-          item['label'] = item[@labelMethod] unless item['label']?
-          @list.append $.handlebar(@listTemplate, item)
-          @element.append "<option value=#{item.id}>#{item.label}</option>"
+      @createList(result)
 
     .always =>
       @inputContainer.removeClass 'loading'
 
+  createList: (result = []) ->
+    @list.empty()
+    if result?
+      $.each result, (index, item) =>
+        item['label'] = item[@labelMethod] unless item['label']?
+        @list.append $.handlebar(@listTemplate, item)
+        @element.append "<option value=#{item.value}>#{item.label}</option>"
+
   setOptionFor: (listItem) ->
     @placeholder.html listItem.data('label')
-    @element.val listItem.data('id')
+    @element.val listItem.data('value')
     @element.trigger 'change'
 
   delayedSearch: ->
