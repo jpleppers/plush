@@ -1,4 +1,4 @@
-<select data-toggle="plush-autocomplete" id="test_model" name="test_model" placeholder="Choose you're favorite color ...">
+<select data-toggle="plush" id="test_model" name="test_model" placeholder="Choose you're favorite color ...">
   <option value="1">AliceBlue</option>
   <option value="2">AntiqueWhite</option>
   <option value="3">Aqua</option>

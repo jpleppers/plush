@@ -3,15 +3,15 @@
   -moz-border-radius: $radius
   border-radius: $radius
 
-// @mixin border-top-left-radius($radius)
-//   -webkit-border-top-left-radius: $radius
-//   -moz-border-radius-topleft: $radius
-//   border-top-left-radius: $radius
+@mixin border-top-left-radius($radius)
+  -webkit-border-top-left-radius: $radius
+  -moz-border-radius-topleft: $radius
+  border-top-left-radius: $radius
 
-// @mixin border-top-right-radius($radius)
-//   -webkit-border-top-right-radius: $radius
-//   -moz-border-radius-topright: $radius
-//   border-top-right-radius: $radius
+@mixin border-top-right-radius($radius)
+  -webkit-border-top-right-radius: $radius
+  -moz-border-radius-topright: $radius
+  border-top-right-radius: $radius
 
 @mixin border-bottom-right-radius($radius)
   -webkit-border-bottom-right-radius: $radius
@@ -27,6 +27,9 @@
   +border-bottom-right-radius($radius)
   +border-bottom-left-radius($radius)
 
+@mixin border-top-radius($radius)
+  +border-top-right-radius($radius)
+  +border-top-left-radius($radius)
 
 @mixin box-sizing($boxmodel)
   -webkit-box-sizing: $boxmodel

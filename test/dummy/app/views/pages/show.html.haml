@@ -6,7 +6,7 @@
 .columns
   .column
     %h3 Select tag
-    = select_tag 'color', options_from_collection_for_select(@tags, 'id', 'name'), data: {toggle: 'plush-autocomplete'}
+    = select_tag 'color', options_from_collection_for_select(@tags, 'id', 'name'), data: {toggle: 'plush'}
   .column
     %pre
 
@@ -14,28 +14,28 @@
 .columns
   .column
     %h3 Select tag with placeholder
-    = select_tag 'color', options_from_collection_for_select(@tags, 'id', 'name'), placeholder: "Choose you're favorite color ...", data: {toggle: 'plush-autocomplete'}
+    = select_tag 'color', options_from_collection_for_select(@tags, 'id', 'name'), placeholder: "Choose you're favorite color ...", data: {toggle: 'plush'}
   .column
     %pre
 
 .columns
   .column
     %h3 Select tag with source
-    = select_tag 'color', nil, placeholder: "Choose you're favorite color ...", data: {toggle: 'plush-autocomplete', label: 'name', source: tags_path}
+    = select_tag 'color', nil, placeholder: "Choose you're favorite color ...", data: {toggle: 'plush', label: 'name', source: tags_path}
   .column
     %pre
 
 .columns
   .column
     %h3 Select tag with source and query
-    = select_tag 'color', nil, placeholder: "Choose you're favorite color ...", data: {toggle: 'plush-autocomplete', label: 'name', source: search_tags_path, query: ''}
+    = select_tag 'color', nil, placeholder: "Choose you're favorite color ...", data: {toggle: 'plush', label: 'name', source: search_tags_path, query: ''}
   .column
     %pre
 
 .columns
   .column
     %h3 Select tag with custom template
-    %select{name: 'user', placeholder: "Choose a user ...", data: {toggle: 'plush-autocomplete', template: 'autocomplete_image_list_item'}}
+    %select{name: 'user', placeholder: "Choose a user ...", data: {toggle: 'plush', template: 'plush_image_list_item'}}
       %option{value: 1, data: {description: 'test1@example.com', image: asset_path('email1.png')}} John Johnson
       %option{value: 2, data: {description: 'test2@example.com', image: asset_path('email2.png')}} Jake Johnson
       %option{value: 3, data: {description: 'test3@example.com', image: asset_path('email3.png')}} Jules Johnson
@@ -55,15 +55,29 @@
             = tstash('color')
 
     %h3 Select tag with custom template from source
-    = select_tag 'color', nil, placeholder: "Choose you're favorite color ...", data: {toggle: 'plush-autocomplete', label: 'name', source: search_tags_path, query: '', template: 'color_list_item'}
+    = select_tag 'color', nil, placeholder: "Choose you're favorite color ...", data: {toggle: 'plush', label: 'name', source: search_tags_path, query: '', template: 'color_list_item'}
+  .column
+    %pre
+
+%h2 Optgroups
+.columns
+  .column
+    %h3 Select tag with optgroup
+    = select_tag 'color', option_groups_from_collection_for_select(Group.all, :tags, :name, :id, :name), placeholder: "Choose you're favorite color ...", data: {toggle: 'plush', position: 'top'}
+  .column
+    %pre
+
+.columns
+  .column
+    %h3 Select tag with optgroup from source
+    = select_tag 'color', option_groups_from_collection_for_select(Group.all, :tags, :name, :id, :name), placeholder: "Choose you're favorite color ...", data: {toggle: 'plush', source: search_grouped_tags_path, position: 'top', query: ''}
   .column
     %pre
 
 %h2 Multi-select
-
 .columns
   .column
     %h3 Select tag
-    = select_tag 'color', options_from_collection_for_select(@tags, 'id', 'name'), data: {toggle: 'plush-autocomplete'}, multiple: 'multiple'
+    = select_tag 'color', options_from_collection_for_select(@tags, 'id', 'name'), multiple: 'multiple', data: {toggle: 'plush', position: 'top'}
   .column
     %pre

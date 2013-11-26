@@ -8,18 +8,22 @@
   +box-sizing(border-box)
   +border-bottom-radius($borderRadius)
 
-  > li
+  li a, .plush-optgroup-label, .plush-no-results
     padding: 3px 5px
     line-height: 2em
-    &:nth-child(even)
-      background-color: $listAlternate
+
+  li
+    line-height: 2em
+    &.plush-list-item
+      &:nth-child(even)
+        background-color: $listAlternate
     
-    &:hover
-      background-color: $listHover
-      a, .title
-        color: white
-      .description
-        color: $lighterGray
+      &:hover
+        background-color: $listHover
+        a, .title
+          color: white
+        .description
+          color: $lighterGray
 
     a, .title
       text-decoration: none
@@ -34,3 +38,16 @@
 
   &.no-scroll
     overflow: visible
+
+
+  .plush-optgroup-label
+    text-transform: uppercase
+    font-weight: bold
+    text-shadow: 1px 1px $lightGray
+    border-style: solid 
+    border-color: $lighterGray
+    border-width: 1px 0
+
+.plush-container.position-top .plush-option-list
+  +border-bottom-radius(0)
+  +border-top-radius($borderRadius)

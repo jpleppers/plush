@@ -1,6 +1,6 @@
 #= require spec_helper
 
-describe 'Autocomplete', ->
+describe 'Plush', ->
 
   before ->
     @xhr = sinon.useFakeXMLHttpRequest()
@@ -13,13 +13,13 @@ describe 'Autocomplete', ->
 
   it 'should add select tag', ->
     $select = $.renderTemplate 'select_tag'
-    $select.plushAutocomplete()
+    $select.plush()
     $('.plush-container').length.should.equal 1
-    $('.plush-list-item', $select.container).length.should.equal 10
+    $('li.plush-list-item', $select.container).length.should.equal 10
     
   it 'should set correct value', ->
     $select = $.renderTemplate 'select_tag'
-    $select.plushAutocomplete()
+    $select.plush()
 
     $('.plush-option-list li[data-value="4"] a',  $select.container).click()
     $select.val().should.equal '4'
@@ -27,15 +27,15 @@ describe 'Autocomplete', ->
 
   it 'should create list from json object', ->
     $select = $.renderTemplate 'select_tag'
-    autocomplete = new PlushAutocomplete($select)
-    autocomplete.createList window.testItems.toJSON()
+    plush = new Plush($select)
+    plush.createListFromJSON window.testItems.toJSON()
 
-    $('.plush-list-item',  $select.container).length.should.equal 10
+    $('li.plush-list-item',  $select.container).length.should.equal 10
 
   it 'should make a correct ajax request', ->
     $select = $.renderTemplate 'select_tag'
     $select.data 'source', 'http://localhost:3000/tags'
-    $select.plushAutocomplete()
+    $select.plush()
 
     @requests.length.should.equal 1
     @requests[0].url.should.match /tags/

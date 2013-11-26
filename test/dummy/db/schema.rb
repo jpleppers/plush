@@ -16,14 +16,19 @@ ActiveRecord::Schema.define(version: 20131120115057) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
+  create_table "groups", force: true do |t|
+    t.string "name"
+  end
+
   create_table "taggings", force: true do |t|
     t.integer "tag_id"
     t.integer "test_model_id"
   end
 
   create_table "tags", force: true do |t|
-    t.string "name"
-    t.string "color"
+    t.string  "name"
+    t.string  "color"
+    t.integer "group_id"
   end
 
   create_table "test_models", force: true do |t|

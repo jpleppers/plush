@@ -4,6 +4,7 @@ Rails.application.routes.draw do
   resources :tags do
     collection do
     get 'search'
+    get 'search_grouped'
     end
   end
 

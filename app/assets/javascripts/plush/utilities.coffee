@@ -7,12 +7,11 @@ $.extend
     
     $(Handlebars.templates[templateName](options))
 
-  plushAutocomplete: (element) ->
+  plush: (element) ->
     $element = $(element)
-    $element.data('plush', new PlushAutocomplete($element))
+    $element.data('plush', new Plush($element))
 
 $.fn.extend
-
-  plushAutocomplete: ->
+  plush: ->
     this.each ->
-      $.plushAutocomplete this
+      $.plush this
