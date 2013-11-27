@@ -34,7 +34,7 @@ describe 'Plush', ->
 
   it 'should make a correct ajax request', ->
     $select = $.renderTemplate 'select_tag'
-    $select.data 'source', 'http://localhost:3000/tags'
+    $select.data 'url', 'http://localhost:3000/tags'
     $select.plush()
 
     @requests.length.should.equal 1

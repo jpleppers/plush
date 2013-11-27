@@ -21,14 +21,14 @@
 .columns
   .column
     %h3 Select tag with source
-    = select_tag 'color', nil, placeholder: "Choose you're favorite color ...", data: {toggle: 'plush', label: 'name', source: tags_path}
+    = select_tag 'color', nil, placeholder: "Choose you're favorite color ...", data: {toggle: 'plush', label: 'name', url: tags_path}
   .column
     %pre
 
 .columns
   .column
     %h3 Select tag with source and query
-    = select_tag 'color', nil, placeholder: "Choose you're favorite color ...", data: {toggle: 'plush', label: 'name', source: search_tags_path, query: ''}
+    = select_tag 'color', nil, placeholder: "Choose you're favorite color ...", data: {toggle: 'plush', label: 'name', url: search_tags_path, query: ''}
   .column
     %pre
 
@@ -55,7 +55,7 @@
             = tstash('color')
 
     %h3 Select tag with custom template from source
-    = select_tag 'color', nil, placeholder: "Choose you're favorite color ...", data: {toggle: 'plush', label: 'name', source: search_tags_path, query: '', template: 'color_list_item'}
+    = select_tag 'color', nil, placeholder: "Choose you're favorite color ...", data: {toggle: 'plush', label: 'name', url: search_tags_path, query: '', template: 'color_list_item'}
   .column
     %pre
 
@@ -70,7 +70,7 @@
 .columns
   .column
     %h3 Select tag with optgroup from source
-    = select_tag 'color', option_groups_from_collection_for_select(Group.all, :tags, :name, :id, :name), placeholder: "Choose you're favorite color ...", data: {toggle: 'plush', source: search_grouped_tags_path, position: 'top', query: ''}
+    = select_tag 'color', option_groups_from_collection_for_select(Group.all, :tags, :name, :id, :name), placeholder: "Choose you're favorite color ...", data: {toggle: 'plush', url: search_grouped_tags_path, position: 'top', query: ''}
   .column
     %pre
 

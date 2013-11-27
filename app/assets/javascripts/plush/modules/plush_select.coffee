@@ -4,32 +4,35 @@ class @Plush
     @element.hide()
     @element.wrap('<div class="plush-container"></div>')
     @container = @element.parent()
-
-    # Option setting
-    @searchWithAjax = @options.query? || @element.data('query')?
-    @customTemplate = @options.template? || @element.data('template')?
-    @customGroupTemplate = @options.groupTemplate? || @element.data('group-template')?
-    @noResults = @options.no_results || @element.data('no-results') || 'No results found for: '
-
-    @labelMethod = if (@options.label? || @element.data('label')?) then ( @options.label || @element.data('label')) else 'label'
-    @listTemplate = if @customTemplate then (@options.template || @element.data('template')) else 'plush_list_item'
-    @groupTemplate = if @customGroupTemplate then (@options.groupTemplate || @element.data('group-template')) else 'plush_optgroup_item'
-
-    @container.append $.handlebar('plush_input', {placeholder: @element.attr('placeholder')})
+    @container.append $.handlebar('plush_input', {placeholder: @element.attr('placeholder')})  
 
     @list = $('.plush-option-list', @container)
-    @list.addClass @listTemplate.replace(/\_/g, '-')
-    position = @element.data('position')
-    @container.addClass("position-#{position}") if position == 'top' || position == 'bottom'
-
     @inputContainer = $('.plush-input', @container)
     @placeholder = $('.plush-placeholder', @inputContainer)
     @input = $('input', @inputContainer)
+    @options.multiple = @options.multiple? || @element.attr('multiple')?
 
-    @element.attr('tabindex', -1)
+    # Option setting
+    @dataDefaults = {}
+    @queryDefault = 'q'
+
+    defaults =
+      noResults:           'No results found for: '
+      labelMethod:         'label'
+      listItemTemplate:    'plush_list_item'
+      optgroupTemplate:    'plush_optgroup_item'
+      multiSelectTemplate: 'plush_multi_select_item'
+      position:            'bottom'
+
+    for key, value of defaults
+      @setDefaultOption key, value
+      
+    @list.addClass @options.listItemTemplate.replace(/\_/g, '-')
+    @container.addClass "position-#{@options.position}"
+    @element.attr 'tabindex', -1
 
     # See if is <option> based or needs to get some JSON data
-    if @element.data('source')?
+    if @element.data('url')?
       @createListFromSource()
     else
       if $('optgroup', @element).length > 0 
@@ -37,7 +40,7 @@ class @Plush
       else
         @createListFromOptions()
 
-    # Add placeholder to select if data attrbute
+    # Add placeholder to select if data attribute
     if @element.attr('placeholder')?
       @element.prop('selectedIndex', -1)
     else
@@ -52,7 +55,7 @@ class @Plush
       @showList()
     .on 'blur', =>
       setTimeout @bind(@hideList), 200
-      @hideInput()
+      @hideInput() unless @options.multiple
     .on 'keyup', =>
       if @searchWithAjax
         @delayedSearch()
@@ -74,19 +77,33 @@ class @Plush
 
         if $('li:visible', @list).length == 0
           @showNoResults()
+        else
+          @hideNoResults()
 
     @list.on 'click', 'a', (event) =>
       event.preventDefault()
-      console.log event.currentTarget
-      @setOptionFor $(event.currentTarget).parents('.plush-list-item').first()
-      @hideList()
-      @hideInput()
+      if @options.multiple
+        @addOptionFor $(event.currentTarget).parents('li').first()
+      else
+        @setOptionFor $(event.currentTarget).parents('li').first()
+        @hideList()
+        @hideInput() unless @options.multiple
 
     return @
+
+  setDefaultOption: (key, value) ->
+    unless @options[key]?
+      dataAttrName = key.replace /([A-Z])/g, ($1) -> "-" + $1.toLowerCase()
+      @options[key] = @element.data(dataAttrName) || value
 
   setOptionFor: (listItem) ->
     @placeholder.html listItem.data('label')
     @element.val listItem.data('value')
+    @element.trigger 'change'
+
+  addOptionFor: (listItem) ->
+    $item = $.handlebar 'plush_multi_select_item', {label: listItem.data('label'), value: listItem.data('value')}
+    @inputContainer.prepend $item
     @element.trigger 'change'
 
   # <option> based building
@@ -97,7 +114,7 @@ class @Plush
   createListFromGroupedOptions: ->
     $('optgroup', @element).each (index, optGroup) =>
       $optGroup = $(optGroup)
-      $group = $.handlebar('plush_optgroup_item', {label: $optGroup.attr('label')})
+      $group = $.handlebar 'plush_optgroup_item', {label: $optGroup.attr('label')}
       
       $('option', $optGroup).each (index, item) =>
         $('.plush-optgroup-list', $group).append(@createListItemFromOption(item))
@@ -106,67 +123,78 @@ class @Plush
 
   createListItemFromOption: (optionItem) ->
     $option = $(optionItem)
-    options = if @customTemplate then @getAttributesFromElement(optionItem) else {}
+    options = @getAttributesFromElement(optionItem)
     options.value = $option.val()
     options.label = $option.html()
-    $.handlebar(@listTemplate, options)
+    $.handlebar(@options.listItemTemplate, options)
 
   # JSON based building
   createListFromSource: ->
     @inputContainer.addClass 'loading'
     
     ajaxOptions = 
-      url: @element.data('source')
+      url: @element.data('url')
       type: "get"
       dataType: "json"
-    ajaxOptions.data = {query: @input.val()} if @searchWithAjax
+
+    dataOptions = @dataDefaults
+    dataOptions[@queryDefault] = @input.val() if @searchWithAjax
+    ajaxOptions.data = dataOptions
 
     $.ajax(ajaxOptions).done (result, status, xhr) =>
       @createListFromJSON(result)
 
     .always =>
       @inputContainer.removeClass 'loading'
+      @checkResults()
 
   createListFromJSON: (result = []) ->
     @list.empty()
     if result? && !$.isEmptyObject(result)
       if $.inArray('value', Object.keys(result[0])) >= 0
         for item in result
-          item['label'] = item[@labelMethod] unless item['label']?
-          @list.append $.handlebar(@listTemplate, item)
+          item['label'] = item[@options.labelMethod] unless item['label']?
+          @list.append $.handlebar(@options.listItemTemplate, item)
           @element.append "<option value=#{item.value}>#{item.label}</option>"
       else
         for groupObject in result
           groupName = Object.keys(groupObject)[0]
-          $group = $.handlebar('plush_optgroup_item', {label: groupName})
+          $group = $.handlebar(@options.optgroupTemplate, {label: groupName})
 
           for item in groupObject[groupName]
-            item['label'] = item[@labelMethod] unless item['label']?
-            $('.plush-optgroup-list', $group).append $.handlebar(@listTemplate, item)
+            item['label'] = item[@options.labelMethod] unless item['label']?
+            $('ul', $group).append $.handlebar(@options.listItemTemplate, item)
 
           @list.append $group
-
-
+      @checkResults()
 
   delayedSearch: ->
     clearTimeout(@timer) if @timer?
     @timer = setTimeout @bind(@createListFromSource), 500
 
+  checkResults: ->
+    if $('li:not(.hidden)', @list).length == 0
+      @showNoResults()
+    else
+      @hideNoResults()
+
   # No results message 
   showNoResults: ->
-    msg = @noResults + @input.val()
+    msg = @options.noResults + @input.val()
 
     if $('.plush-no-results', @list).length == 0
-      msgElement = $("<div class='plush-no-results'>#{@noResults}</div>")
-      @list.append msgElement
+      @list.append $("<div class='plush-no-results'>#{msg}</div>")
     else
       $('.plush-no-results', @list).html(msg)
       $('.plush-no-results', @list).show()
 
+  hideNoResults: ->
+    $('.plush-no-results', @list).hide()
+
   # Input togglers for autocompletion behaviour
   showInput: ->
     @placeholder.hide()
-    @input.css('display', 'block')
+    @input.css 'display', 'block'
     @input.focus()
 
   hideInput: ->
@@ -176,16 +204,16 @@ class @Plush
   # List togglers 
   showList: ->
     @list.show()
-    @inputContainer.addClass('opened')
+    @inputContainer.addClass 'opened'
 
   hideList: ->
     @list.hide()
-    @inputContainer.removeClass('opened')
+    @inputContainer.removeClass 'opened'
 
   # Utilities
   getAttributesFromElement: (element) ->
     options = {}
-    for attr in element.attributes    
+    for attr in element.attributes
       options[attr.nodeName.replace(/^data-/, '')]= attr.nodeValue if attr.nodeName.match(/^data-/)
     options
 

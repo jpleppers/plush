@@ -5,11 +5,11 @@ class TagsController < ApplicationController
   end
 
   def search
-    render json: Tag.where('name ILIKE ?', "%#{params[:query]}%").to_a.map{|t| t.to_hash}.to_json
+    render json: Tag.where('name ILIKE ?', "%#{params[:q]}%").to_a.map{|t| t.to_hash}.to_json
   end
 
   def search_grouped
-    tags = Tag.where('name ILIKE ?', "%#{params[:query]}%").group_by(&:group).map do |group, tags|
+    tags = Tag.where('name ILIKE ?', "%#{params[:q]}%").group_by(&:group).map do |group, tags|
       { :"#{group.name}" => tags.map{|t| t.to_hash} }
     end
     render json: tags.to_json
