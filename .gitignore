@@ -27,6 +27,6 @@ public/uploads/*
 pkg
 .yardoc
 test/dummy/config/database.yml
-test/dummy/public/sitemaps
+test/dummy/public/assets
 .rvmrc
 zeus.json
