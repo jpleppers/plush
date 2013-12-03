@@ -31,9 +31,8 @@ class @Items
 
 
   toJSON: ->
-    @items.map ->
-      {value: this.value, label: this.label, description: this.description, color: this.color }
-
+    @items.map (item) ->
+      {value: item.value(), label: item.label, description: item.description(), color: item.color }
 
 window.testItems = new Items([
   new Item(1,  'AliceBlue',      '#F0F8FF'),
@@ -47,3 +46,8 @@ window.testItems = new Items([
   new Item(9,  'BlanchedAlmond', '#FFEBCD'),
   new Item(10, 'Blue',           '#0000FF')
 ])
+
+window.testEvents =
+  keyArrowDown: $.Event( "keyup", { keyCode: 38 } )
+  keyArrowUp:   $.Event( "keyup", { keyCode: 40 } )
+  keyEscape:    $.Event( "keyup", { keyCode: 27 } )

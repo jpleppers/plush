@@ -18,33 +18,38 @@ namespace :plush do
   namespace :assets do
     output_dir = Plush::Engine.config.root.join("compiled")
     assets_dir = Plush::Engine.config.root.join("app/assets")
-    sprockets = Sprockets::Environment.new(Pathname.new(File.dirname(__FILE__))) do |env|
-      env.logger = Logger.new(STDOUT)
-    end
-    sprockets.css_compressor = YUI::CssCompressor.new
-    sprockets.js_compressor  = Uglifier.new(mangle: true)
+    sprockets = Sprockets::Environment.new(Pathname.new(File.dirname(__FILE__))) { |env| env.logger = Logger.new(STDOUT)}
+
+    FileUtils.mkdir_p output_dir
    
     task :compile => [:compile_js, :compile_css]
 
     task :compile_js do
       sprockets.append_path(assets_dir.join('javascripts').to_s)
-      asset     = sprockets['plush.js.coffee']
-      outfile   = Pathname.new(output_dir).join("plush-#{Plush::VERSION}.min.js")
-   
-      FileUtils.mkdir_p outfile.dirname
-   
-      asset.write_to(outfile)
+
+      
+      asset = sprockets['plush.js.coffee']
+      asset.write_to Pathname.new(output_dir).join("plush-#{Plush::VERSION}.js")
+      
+      sprockets.js_compressor = Uglifier.new(mangle: true)
+
+      asset = sprockets['plush.js.coffee']
+      asset.write_to Pathname.new(output_dir).join("plush-#{Plush::VERSION}.min.js")
+
       puts "successfully compiled js assets"
     end
 
     task :compile_css do
       sprockets.append_path(assets_dir.join('stylesheets').to_s)
-      asset     = sprockets['plush.css.sass']
-      outfile   = Pathname.new(output_dir).join("plush-#{Plush::VERSION}.min.css")
-   
-      FileUtils.mkdir_p outfile.dirname
-   
-      asset.write_to(outfile)
+
+      asset = sprockets['plush.css.sass']
+      asset.write_to Pathname.new(output_dir).join("plush-#{Plush::VERSION}.css")
+
+      sprockets.css_compressor = YUI::CssCompressor.new
+
+      asset = sprockets['plush.css.sass']
+      asset.write_to Pathname.new(output_dir).join("plush-#{Plush::VERSION}.min.css")
+
       puts "successfully compiled css assets"
     end
 

@@ -11,6 +11,7 @@ class @Plush
     @placeholder = $('.plush-placeholder', @inputContainer)
     @input = $('input', @inputContainer)
     @options.multiple = @options.multiple? || @element.attr('multiple')?
+    @searchWithAjax = @element.data('query')?
 
     # Option setting
     @dataDefaults = {}
@@ -23,6 +24,7 @@ class @Plush
       optgroupTemplate:    'plush_optgroup_item'
       multiSelectTemplate: 'plush_multi_select_item'
       position:            'bottom'
+      url:                 null
 
     for key, value of defaults
       @setDefaultOption key, value
@@ -31,8 +33,12 @@ class @Plush
     @container.addClass "position-#{@options.position}"
     @element.attr 'tabindex', -1
 
+    if $('option[selected]', @element).length > 0 && !@options.multiple 
+      @placeholder.html $('option[selected]', @element).html()
+      @input.val $('option[selected]', @element).html()
+
     # See if is <option> based or needs to get some JSON data
-    if @element.data('url')?
+    if @options.url?
       @createListFromSource()
     else
       if $('optgroup', @element).length > 0 
@@ -46,39 +52,18 @@ class @Plush
     else
       @setOptionFor $('li:first-child', @list)
 
-    @inputContainer.on 'click', '.plush-placeholder', (event) =>
+    @inputContainer.on 'click', '.plush-placeholder, .plush-caret', (event) =>
       event.preventDefault()
-      @showInput()
+      @show()
 
     # User event behaviour
+    @container.on 'blur', 'input, a', =>
+      setTimeout @bind(@hide), 100
+
     @input.on 'focus', =>
-      @showList()
-    .on 'blur', =>
-      setTimeout @bind(@hideList), 200
-      @hideInput() unless @options.multiple
-    .on 'keyup', =>
-      if @searchWithAjax
-        @delayedSearch()
-      else
-        matcher = new RegExp(@input.val(), 'i')
-        $('.plush-list-item a', @container).each ->
-          $element = $(this)
-          if matcher.test($element.html())
-            $element.parents('.plush-list-item').first().removeClass('hidden')
-          else
-            $element.parents('.plush-list-item').first().addClass('hidden')
-
-        $('.plush-optgroup', @container).each ->
-          $element = $(this)
-          if $('.plush-list-item:not(.hidden)', $element).length == 0
-            $element.hide()
-          else 
-            $element.show()
-
-        if $('li:visible', @list).length == 0
-          @showNoResults()
-        else
-          @hideNoResults()
+      @show() unless @inputContainer.hasClass 'opened'
+    .on 'keyup', (event) =>
+      @handleInputKeyPress(event)
 
     @list.on 'click', 'a', (event) =>
       event.preventDefault()
@@ -86,10 +71,39 @@ class @Plush
         @addOptionFor $(event.currentTarget).parents('li').first()
       else
         @setOptionFor $(event.currentTarget).parents('li').first()
-        @hideList()
-        @hideInput() unless @options.multiple
+        @hide()
+    .on 'keydown', 'a', (event) =>
+      event.preventDefault()
+    .on 'keyup', 'a', (event) =>
+      event.preventDefault()
+      @handleListKeyPress(event)      
 
+    @element.trigger 'initialized'
     return @
+
+  handleInputKeyPress: (event) ->
+    if event.keyCode == 38 || event.keyCode == 40
+      event.preventDefault()
+      $('li:not(.hidden):last a', @list).focus()  if event.keyCode == 38
+      $('li:not(.hidden):first a', @list).focus() if event.keyCode == 40
+    else
+      if @searchWithAjax
+        @delayedSearch()
+      else
+        @search()
+  
+  handleListKeyPress: (event) ->
+    $anchor = $(event.currentTarget)
+    if event.keyCode == 38 || event.keyCode == 40       
+
+      $link = @prevAnchor($anchor) if event.keyCode == 38
+      $link = @nextAnchor($anchor) if event.keyCode == 40
+
+      if !$link.length > 0 then @input.focus() else $link.focus()
+
+    if event.keyCode == 27
+      @input.focus()
+
 
   setDefaultOption: (key, value) ->
     unless @options[key]?
@@ -105,6 +119,16 @@ class @Plush
     $item = $.handlebar 'plush_multi_select_item', {label: listItem.data('label'), value: listItem.data('value')}
     @inputContainer.prepend $item
     @element.trigger 'change'
+
+  nextAnchor: (anchor) ->
+    $li = anchor.parents('li').first()
+    next = $('a', $li.next())
+    if next && !next.parents('li').first().hasClass('hidden') then next else @nextAnchor(next)
+
+  prevAnchor: (anchor) ->
+    $li = anchor.parents('li').first()
+    prev = $('a', $li.prev())
+    if prev && !prev.parents('li').first().hasClass('hidden') then prev else @prevAnchor(prev)
 
   # <option> based building
   createListFromOptions: ->
@@ -133,7 +157,7 @@ class @Plush
     @inputContainer.addClass 'loading'
     
     ajaxOptions = 
-      url: @element.data('url')
+      url: @options.url
       type: "get"
       dataType: "json"
 
@@ -147,6 +171,9 @@ class @Plush
     .always =>
       @inputContainer.removeClass 'loading'
       @checkResults()
+
+  hasFocus: () ->
+    $('*:focus', @container).length > 0
 
   createListFromJSON: (result = []) ->
     @list.empty()
@@ -166,11 +193,31 @@ class @Plush
             $('ul', $group).append $.handlebar(@options.listItemTemplate, item)
 
           @list.append $group
+
+      @input.focus()
       @checkResults()
 
   delayedSearch: ->
     clearTimeout(@timer) if @timer?
     @timer = setTimeout @bind(@createListFromSource), 500
+
+  search: () ->
+    matcher = new RegExp(@input.val(), 'i')
+    $('.plush-list-item a', @container).each ->
+      $element = $(this)
+      if matcher.test($element.html())
+        $element.parents('.plush-list-item').first().removeClass('hidden')
+      else
+        $element.parents('.plush-list-item').first().addClass('hidden')
+
+    $('.plush-optgroup', @container).each ->
+      $element = $(this)
+      if $('.plush-list-item:not(.hidden)', $element).length == 0
+        $element.hide()
+      else 
+        $element.show()
+
+    @checkResults()
 
   checkResults: ->
     if $('li:not(.hidden)', @list).length == 0
@@ -192,23 +239,21 @@ class @Plush
     $('.plush-no-results', @list).hide()
 
   # Input togglers for autocompletion behaviour
-  showInput: ->
+  show: ->
     @placeholder.hide()
-    @input.css 'display', 'block'
-    @input.focus()
-
-  hideInput: ->
-    @placeholder.show()
-    @input.hide()
-
-  # List togglers 
-  showList: ->
-    @list.show()
+    @input.css 'display', 'block'    
     @inputContainer.addClass 'opened'
+    @list.show()
+    @input.focus() unless @input.is(":focus")
 
-  hideList: ->
-    @list.hide()
-    @inputContainer.removeClass 'opened'
+  hide: ->
+    unless @hasFocus()
+      unless @options.multiple
+        @placeholder.show()
+        @input.hide()
+
+      @inputContainer.removeClass 'opened'
+      @list.hide()
 
   # Utilities
   getAttributesFromElement: (element) ->
