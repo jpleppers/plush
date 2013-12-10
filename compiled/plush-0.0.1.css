@@ -212,6 +212,10 @@
       text-decoration: none;
       color: #333333;
       display: block; }
+    .plush-option-list li a:focus {
+      background-color: #0099ff;
+      color: white;
+      outline: 0; }
     .plush-option-list li .description {
       font-size: 12px;
       color: #999999;

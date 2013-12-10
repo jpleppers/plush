@@ -35,7 +35,7 @@
 .columns
   .column
     %h3 Select tag with custom template
-    %select{name: 'user', placeholder: "Choose a user ...", data: {toggle: 'plush', template: 'plush_image_list_item'}}
+    %select{name: 'user', placeholder: "Choose a user ...", data: {toggle: 'plush', list_item_template: 'plush_image_list_item'}}
       %option{value: 1, data: {description: 'test1@example.com', image: asset_path('email1.png')}} John Johnson
       %option{value: 2, data: {description: 'test2@example.com', image: asset_path('email2.png')}} Jake Johnson
       %option{value: 3, data: {description: 'test3@example.com', image: asset_path('email3.png')}} Jules Jenson
@@ -55,7 +55,7 @@
             = tstash('color')
 
     %h3 Select tag with custom template from source
-    = select_tag 'color', nil, placeholder: "Choose you're favorite color ...", data: {toggle: 'plush', label: 'name', url: search_tags_path, query: '', template: 'color_list_item'}
+    = select_tag 'color', nil, placeholder: "Choose you're favorite color ...", data: {toggle: 'plush', label: 'name', url: search_tags_path, query: '', list_item_template: 'color_list_item'}
   .column
     %pre
 

@@ -198,61 +198,83 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
       }
       this.inputContainer.on('click', '.plush-placeholder, .plush-caret', function(event) {
         event.preventDefault();
-        return _this.showInput();
+        return _this.show();
+      });
+      this.container.on('blur', 'input, a', function() {
+        return setTimeout(_this.bind(_this.hide), 100);
       });
       this.input.on('focus', function() {
-        return _this.showList();
-      }).on('blur', function() {
-        setTimeout(_this.bind(_this.hideList), 200);
-        if (!_this.options.multiple) {
-          return _this.hideInput();
+        if (!_this.inputContainer.hasClass('opened')) {
+          return _this.show();
         }
-      }).on('keyup', function() {
-        var matcher;
-        if (_this.searchWithAjax) {
-          return _this.delayedSearch();
-        } else {
-          matcher = new RegExp(_this.input.val(), 'i');
-          $('.plush-list-item a', _this.container).each(function() {
-            var $element;
-            $element = $(this);
-            if (matcher.test($element.html())) {
-              return $element.parents('.plush-list-item').first().removeClass('hidden');
-            } else {
-              return $element.parents('.plush-list-item').first().addClass('hidden');
-            }
-          });
-          $('.plush-optgroup', _this.container).each(function() {
-            var $element;
-            $element = $(this);
-            if ($('.plush-list-item:not(.hidden)', $element).length === 0) {
-              return $element.hide();
-            } else {
-              return $element.show();
-            }
-          });
-          if ($('li:visible', _this.list).length === 0) {
-            return _this.showNoResults();
-          } else {
-            return _this.hideNoResults();
-          }
-        }
+      }).on('keyup', function(event) {
+        event.stopPropagation();
+        return _this.handleInputKeyPress(event);
       });
       this.list.on('click', 'a', function(event) {
         event.preventDefault();
+        event.stopPropagation();
         if (_this.options.multiple) {
           return _this.addOptionFor($(event.currentTarget).parents('li').first());
         } else {
           _this.setOptionFor($(event.currentTarget).parents('li').first());
-          _this.hideList();
-          if (!_this.options.multiple) {
-            return _this.hideInput();
-          }
+          return _this.hide();
         }
+      }).on('keydown', 'a', function(event) {
+        event.preventDefault();
+        return event.stopPropagation();
+      }).on('keyup', 'a', function(event) {
+        event.preventDefault();
+        event.stopPropagation();
+        return _this.handleListKeyPress(event);
       });
       this.element.trigger('initialized');
       return this;
     }
+
+    Plush.prototype.handleInputKeyPress = function(event) {
+      if (event.keyCode === 38 || event.keyCode === 40) {
+        event.preventDefault();
+        if (event.keyCode === 38) {
+          $('li:not(.hidden):last a', this.list).focus();
+        }
+        if (event.keyCode === 40) {
+          return $('li:not(.hidden):first a', this.list).focus();
+        }
+      } else {
+        if (this.searchWithAjax) {
+          return this.delayedSearch();
+        } else {
+          return this.search(this.input.val());
+        }
+      }
+    };
+
+    Plush.prototype.handleListKeyPress = function(event) {
+      var $anchor, $link;
+      $anchor = $(event.currentTarget);
+      if (event.keyCode === 38 || event.keyCode === 40) {
+        if (event.keyCode === 38) {
+          $link = this.prevAnchor($anchor);
+        }
+        if (event.keyCode === 40) {
+          $link = this.nextAnchor($anchor);
+        }
+        if (!$link.length > 0) {
+          this.input.focus();
+        } else {
+          $link.focus();
+        }
+      }
+      if (event.keyCode === 27) {
+        this.input.focus();
+      }
+      if (event.keyCode === 13) {
+        $anchor = $(event.currentTarget);
+        this.setOptionFor($anchor.parents('li').first());
+        return $anchor.blur();
+      }
+    };
 
     Plush.prototype.setDefaultOption = function(key, value) {
       var dataAttrName;
@@ -278,6 +300,28 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
       });
       this.inputContainer.prepend($item);
       return this.element.trigger('change');
+    };
+
+    Plush.prototype.nextAnchor = function(anchor) {
+      var $li, next;
+      $li = anchor.parents('li').first();
+      next = $('a', $li.next());
+      if (next && !next.parents('li').first().hasClass('hidden')) {
+        return next;
+      } else {
+        return this.nextAnchor(next);
+      }
+    };
+
+    Plush.prototype.prevAnchor = function(anchor) {
+      var $li, prev;
+      $li = anchor.parents('li').first();
+      prev = $('a', $li.prev());
+      if (prev && !prev.parents('li').first().hasClass('hidden')) {
+        return prev;
+      } else {
+        return this.prevAnchor(prev);
+      }
     };
 
     Plush.prototype.createListFromOptions = function() {
@@ -333,6 +377,10 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
       });
     };
 
+    Plush.prototype.hasFocus = function() {
+      return $('*:focus', this.container).length > 0;
+    };
+
     Plush.prototype.createListFromJSON = function(result) {
       var $group, groupName, groupObject, item, _i, _j, _k, _len, _len1, _len2, _ref;
       if (result == null) {
@@ -367,6 +415,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
             this.list.append($group);
           }
         }
+        this.input.focus();
         return this.checkResults();
       }
     };
@@ -376,6 +425,30 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         clearTimeout(this.timer);
       }
       return this.timer = setTimeout(this.bind(this.createListFromSource), 500);
+    };
+
+    Plush.prototype.search = function(query) {
+      var matcher;
+      matcher = new RegExp(query, 'i');
+      $('.plush-list-item a', this.container).each(function() {
+        var $element;
+        $element = $(this);
+        if (matcher.test($element.html())) {
+          return $element.parents('.plush-list-item').first().removeClass('hidden');
+        } else {
+          return $element.parents('.plush-list-item').first().addClass('hidden');
+        }
+      });
+      $('.plush-optgroup', this.container).each(function() {
+        var $element;
+        $element = $(this);
+        if ($('.plush-list-item:not(.hidden)', $element).length === 0) {
+          return $element.hide();
+        } else {
+          return $element.show();
+        }
+      });
+      return this.checkResults();
     };
 
     Plush.prototype.checkResults = function() {
@@ -401,25 +474,25 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
       return $('.plush-no-results', this.list).hide();
     };
 
-    Plush.prototype.showInput = function() {
+    Plush.prototype.show = function() {
       this.placeholder.hide();
       this.input.css('display', 'block');
-      return this.input.focus();
-    };
-
-    Plush.prototype.hideInput = function() {
-      this.placeholder.show();
-      return this.input.hide();
-    };
-
-    Plush.prototype.showList = function() {
       this.inputContainer.addClass('opened');
-      return this.list.show();
+      this.list.show();
+      if (!this.input.is(":focus")) {
+        return this.input.focus();
+      }
     };
 
-    Plush.prototype.hideList = function() {
-      this.inputContainer.removeClass('opened');
-      return this.list.hide();
+    Plush.prototype.hide = function() {
+      if (!this.hasFocus()) {
+        if (!this.options.multiple) {
+          this.placeholder.show();
+          this.input.hide();
+        }
+        this.inputContainer.removeClass('opened');
+        return this.list.hide();
+      }
     };
 
     Plush.prototype.getAttributesFromElement = function(element) {

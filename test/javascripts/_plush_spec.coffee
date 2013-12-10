@@ -1,47 +1,193 @@
 #= require spec_helper
 
 describe 'Plush', ->
+  describe '#setDefaultOption', ->
+    beforeEach ->
+      @select = $.renderTemplate 'select_tag'
+      @plush = new Plush @select
 
-  describe '#createListFromOptions', ->
-    it 'should add select tag', ->
-      $select = $.renderTemplate 'select_tag'
-      $select.plush()
-      $('.plush-container').length.should.equal 1
-      $('li.plush-list-item', $select.container).length.should.equal 10
+    it 'should set default option', ->
+      @plush.setDefaultOption 'foo', 'bar'
+      @plush.options.foo.should.equal 'bar'
 
-  describe '#createListFromJSON', ->
-    before ->
-      @xhr = sinon.useFakeXMLHttpRequest()
-      @requests = []
-      @xhr.onCreate = (req) => 
-        @requests.push(req)
+    it 'should set default option for passed options', ->
+      @plush =  new Plush @select, { foo: 'baz'}
+      @plush.setDefaultOption 'foo', 'bar'
+      @plush.options.foo.should.equal 'baz'
 
-    after -> @xhr.restore()
+    it 'should set default option for data attribute', ->
+      @select.data 'foo', 'baz'
+      @plush.setDefaultOption 'foo', 'bar'
+      @plush.options.foo.should.equal 'baz'
 
-    it 'should create list from json object', ->
-      $select = $.renderTemplate 'select_tag'
-      plush = new Plush($select)
-      plush.createListFromJSON window.testItems.toJSON()
-      $('li.plush-list-item',  $select.container).length.should.equal 10
-      $('li[data-value=4] a',  $select.container).first().html().should.equal 'Aquamarine'
+  context 'with default options', ->
+    beforeEach ->
+      @select = $.renderTemplate 'select_tag'
+      @plush = new Plush @select
+
+    describe '#createListFromOptions', ->
+      it 'should add select tag', ->
+        $('.plush-container').length.should.equal 1
+        $('li.plush-list-item', @select.container).length.should.equal 10
+
+    describe '#createListFromJSON', ->
+      before ->
+        @xhr = sinon.useFakeXMLHttpRequest()
+        @requests = []
+        @xhr.onCreate = (req) => 
+          @requests.push(req)
+
+      after -> @xhr.restore()
+
+      it 'should create list from json object', ->
+        @plush.createListFromJSON window.testItems.toJSON()
+        $('li.plush-list-item',  @select.container).length.should.equal 10
+        $('li[data-value=4] a',  @select.container).first().html().should.equal 'Aquamarine'
+
+      it 'should make a correct ajax request', ->
+        @select = $.renderTemplate 'select_tag'
+        @select.data 'url', 'http://localhost:3000/tags'
+        @select.plush()
+
+        @requests.length.should.equal 1
+        @requests[0].url.should.match /tags/
+        @requests[0].requestHeaders.Accept.should.match /json/
+        @requests[0].method.should.equal 'GET'
+        @requests = []
+
+    describe '#search', ->
+      it 'should match items based on a query', ->
+        @plush.search 'bl'
+        $('li:not(.hidden)', @plush.list).length.should.equal 4
+        @plush.search 'black'
+        $('li:not(.hidden)', @plush.list).length.should.equal 1
+
+  
+    describe '#setOptionFor', ->
+      it 'should set correct value', ->      
+        @plush.setOptionFor $('li[data-value="6"]', @plush.list)
+        @select.serialize().should.equal 'test_model=6'
+
+      it 'should set correct value on click', ->
+        $('.plush-option-list li[data-value="4"] a',  @plush.container).click()
+        @select.val().should.equal '4'
+        @select.serialize().should.equal 'test_model=4'
+
+    describe '#nextAnchor', ->
+      it 'should select next anchor', ->
+        anchor = $('li:first-child a', @plush.list)
+        @plush.nextAnchor(anchor).html().should.equal 'AntiqueWhite'
+      
+      it 'should select next anchor whith filtered results', ->
+        @plush.search 'bl'
+        anchor = $('li:first-child:not(.hidden) a', @plush.list)
+        @plush.nextAnchor(anchor).html().should.equal 'Black'
+
+      it 'should return null when no suitable next anchor is present', ->
+        @plush.search 'azure'
+        anchor = $('li:first-child a', @plush.list)
+        @plush.prevAnchor(anchor).length.should.equal 0
+    
+    describe '#prevAnchor', ->
+      it 'should select previous anchor', ->
+        anchor = $('li:last-child a', @plush.list)
+        @plush.prevAnchor(anchor).html().should.equal 'BlanchedAlmond'
+      
+      it 'should select next anchor whith filtered results', ->
+        @plush.search 'bl'
+        anchor = $('li[data-value="8"] a', @plush.list)
+        @plush.prevAnchor(anchor).html().should.equal 'AliceBlue'
+
+      it 'should return null when no suitable previous anchor is present', ->
+        @plush.search 'azure'
+        anchor = $('li:first-child a', @plush.list)
+        @plush.prevAnchor(anchor).length.should.equal 0
+
+    describe '#checkResults', ->
+      it 'should show no results message', ->
+        @plush.show()
+        @plush.search 'xyz'
+        $('.plush-no-results:visible', @plush.list).length.should.equal 1
+
+      it 'should hide no results message', ->
+        @plush.show()
+        @plush.search 'blue'
+        $('.plush-no-results:visible', @plush.list).length.should.equal 0
+
+        @plush.search ''
+        $('.plush-no-results:visible', @plush.list).length.should.equal 0
+
+  context 'with custom list item template', ->
+    beforeEach ->
+      @select = $.renderTemplate 'select_tag', ''
+      @plush = new Plush @select, {listItemTemplate: 'plush_image_list_item'}
+
+    it 'should have correct list item template option', ->
+      @plush.options.listItemTemplate = 'plush_image_list_item'
+
+    it 'should use custom template for list rendering', ->
+      $('li', @plush.list).filter('.plush-imagebox').length.should.equal 10
+
+    describe '#setOptionFor', ->
+      it 'should set correct value', ->      
+        @plush.setOptionFor $('li[data-value="6"]', @plush.list)
+        @select.serialize().should.equal 'test_model=6'
+
+      it 'should set correct value on click', ->
+        $('.plush-option-list li[data-value="4"] a',  @plush.container).click()
+        @select.val().should.equal '4'
+
+  context 'with optgroups', ->
+    beforeEach ->
+      @select = $.renderTemplate 'select_with_optgroups', ''
+      @plush = new Plush @select
+
+    it 'should render group listings', ->
+      $('.plush-optgroup', @plush.list).length.should.equal 3
+      $('.plush-optgroup:first-child .plush-list-item', @plush.list).length.should.equal 14
+
+    describe '#setOptionFor', ->
+      it 'should set correct value', ->
+        @plush.setOptionFor $('li[data-value="137"]', @plush.list)
+        @select.serialize().should.equal 'color=137'
+
+      it 'should set correct value on click', ->
+        $('.plush-option-list li[data-value="137"] a',  @plush.container).click()
+        @select.val().should.equal '137'
+
+  context 'with multiple select', ->
+    beforeEach ->
+      @select = $.renderTemplate 'select_with_optgroups', ''
+      @plush = new Plush @select
+
+    describe '#addOptionFor', ->
+      beforeEach ->
+        @plush.addOptionFor $('li[data-value="1"]', @plush.list)
+        @plush.addOptionFor $('li[data-value="2"]', @plush.list)
+        @plush.addOptionFor $('li[data-value="3"]', @plush.list)
+
+      it 'should set correct values', ->        
+        @select.serialize().should.equal ['color=1', 'color=2', 'color=3'].join('&')
+
+      it 'should set placeholder values', ->
+        placeholders = $('.plush-multi-select-item', @plush.input).map -> 
+          $(this).html()
+
+        placeholders.should.equal ['AliceBlue', 'AntiqueWhite', 'Aqua']
+
+    decsribe 'click on list items', ->
+      it 'should set correct values on click', ->
+        $('.plush-option-list li[data-value="1"] a',  @plush.container).click()
+        $('.plush-option-list li[data-value="2"] a',  @plush.container).click()
+        $('.plush-option-list li[data-value="3"] a',  @plush.container).click()
+        
+        @select.serialize().should.equal ['color=1', 'color=2', 'color=3'].join('&')
 
 
-    it 'should make a correct ajax request', ->
-      $select = $.renderTemplate 'select_tag'
-      $select.data 'url', 'http://localhost:3000/tags'
-      $select.plush()
 
-      @requests.length.should.equal 1
-      @requests[0].url.should.match /tags/
-      @requests[0].requestHeaders.Accept.should.match /json/
-      @requests[0].method.should.equal 'GET'
-      @requests = []
 
-  describe '#setOptionFor', ->      
-    it 'should set correct value', ->
-      $select = $.renderTemplate 'select_tag'
-      $select.plush()
 
-      $('.plush-option-list li[data-value="4"] a',  $select.container).click()
-      $select.val().should.equal '4'
-      $select.serialize().should.equal 'test_model=4'
+
+
+
+

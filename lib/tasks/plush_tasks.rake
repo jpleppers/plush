@@ -1,5 +1,5 @@
-desc "Compile Handlebars templates"
 namespace :plush do
+  desc "Compile Handlebars templates"
   task :handlebars do
     for file in Dir.glob('app/templates/*.haml')
       filename = file.split('/').last.gsub('.haml', '')
@@ -22,8 +22,10 @@ namespace :plush do
 
     FileUtils.mkdir_p output_dir
    
+    desc "Compile JS and CSS assets (non-minified and minified versions)"
     task :compile => [:compile_js, :compile_css]
 
+    desc "Compile JS assets (non-minified and minified versions)"
     task :compile_js do
       sprockets.append_path(assets_dir.join('javascripts').to_s)
 
@@ -39,6 +41,7 @@ namespace :plush do
       puts "successfully compiled js assets"
     end
 
+    desc "Compile CSS assets (non-minified and minified versions)"
     task :compile_css do
       sprockets.append_path(assets_dir.join('stylesheets').to_s)
 

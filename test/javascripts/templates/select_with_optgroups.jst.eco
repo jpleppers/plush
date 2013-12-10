@@ -1,0 +1,41 @@
+<select data-toggle="plush" id="color" name="color" placeholder="Choose you're favorite color ..." >
+  <optgroup label="Blues">
+    <option value="1">AliceBlue</option>
+    <option value="10">Blue</option>
+    <option value="11">BlueViolet</option>
+    <option value="14">CadetBlue</option>
+    <option value="18">CornflowerBlue</option>
+    <option value="35">DarkSlateBlue</option>
+    <option value="40">DeepSkyBlue</option>
+    <option value="42">DodgerBlue</option>
+    <option value="91">MidnightBlue</option>
+    <option value="112">PowderBlue</option>
+    <option value="116">RoyalBlue</option>
+    <option value="124">SkyBlue</option>
+    <option value="125">SlateBlue</option>
+    <option value="129">SteelBlue</option>
+  </optgroup>
+  <optgroup label="White">
+    <option value="2">AntiqueWhite</option>
+    <option value="44">FloralWhite</option>
+    <option value="48">GhostWhite</option>
+    <option value="95">NavajoWhite</option>
+    <option value="137">White</option>
+    <option value="138">WhiteSmoke</option>
+  </optgroup>
+  <optgroup label="Dark">
+    <option value="22">DarkBlue</option>
+    <option value="23">DarkCyan</option>
+    <option value="24">DarkGoldenRod</option>
+    <option value="25">DarkGray</option>
+    <option value="26">DarkGreen</option>
+    <option value="27">DarkKhaki</option>
+    <option value="28">DarkMagenta</option>
+    <option value="29">DarkOliveGreen</option>
+    <option value="30">DarkOrange</option>
+    <option value="31">DarkOrchid</option>
+    <option value="32">DarkRed</option>
+    <option value="33">DarkSalmon</option>
+    <option value="34">DarkSeaGreen</option>
+  </optgroup>
+</select>

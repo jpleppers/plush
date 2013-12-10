@@ -63,10 +63,12 @@ class @Plush
     @input.on 'focus', =>
       @show() unless @inputContainer.hasClass 'opened'
     .on 'keyup', (event) =>
-      @handleInputKeyPress(event)
+      event.stopPropagation()
+      @handleInputKeyPress(event)      
 
     @list.on 'click', 'a', (event) =>
       event.preventDefault()
+      event.stopPropagation()
       if @options.multiple
         @addOptionFor $(event.currentTarget).parents('li').first()
       else
@@ -74,8 +76,10 @@ class @Plush
         @hide()
     .on 'keydown', 'a', (event) =>
       event.preventDefault()
+      event.stopPropagation()
     .on 'keyup', 'a', (event) =>
       event.preventDefault()
+      event.stopPropagation()
       @handleListKeyPress(event)      
 
     @element.trigger 'initialized'
@@ -90,20 +94,28 @@ class @Plush
       if @searchWithAjax
         @delayedSearch()
       else
-        @search()
+        @search @input.val()
   
   handleListKeyPress: (event) ->
     $anchor = $(event.currentTarget)
-    if event.keyCode == 38 || event.keyCode == 40       
+
+    # Up / Down key
+    if event.keyCode == 38 || event.keyCode == 40  
 
       $link = @prevAnchor($anchor) if event.keyCode == 38
       $link = @nextAnchor($anchor) if event.keyCode == 40
 
       if !$link.length > 0 then @input.focus() else $link.focus()
 
+    # Escape key
     if event.keyCode == 27
       @input.focus()
 
+    # Enter key
+    if event.keyCode == 13
+      $anchor = $(event.currentTarget)
+      @setOptionFor $anchor.parents('li').first()
+      $anchor.blur()
 
   setDefaultOption: (key, value) ->
     unless @options[key]?
@@ -201,8 +213,8 @@ class @Plush
     clearTimeout(@timer) if @timer?
     @timer = setTimeout @bind(@createListFromSource), 500
 
-  search: () ->
-    matcher = new RegExp(@input.val(), 'i')
+  search: (query) ->
+    matcher = new RegExp(query, 'i')
     $('.plush-list-item a', @container).each ->
       $element = $(this)
       if matcher.test($element.html())
