@@ -13,13 +13,20 @@
     line-height: 2em
 
   li
-    line-height: 2em
+    line-height: 1.8em
+    border-top: 1px solid transparent
+    border-bottom: 1px solid transparent
+
     &.plush-list-item
       &:nth-child(even)
         background-color: $listAlternate
     
       &:hover
         background-color: $listHover
+        border-color: $ligthBlue
+        text-shadow: 0 1px 1px rgba(black, 0.25)
+
+
         a, .title
           color: white
         .description
@@ -34,7 +41,6 @@
       background-color: $blue
       color: white
       outline: 0
-
 
     .description
       font-size: 12px

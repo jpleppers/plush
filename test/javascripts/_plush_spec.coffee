@@ -157,31 +157,40 @@ describe 'Plush', ->
 
   context 'with multiple select', ->
     beforeEach ->
-      @select = $.renderTemplate 'select_with_optgroups', ''
+      @select = $.renderTemplate 'select_tag', ''
+      @select.attr 'multiple', 'multiple'
       @plush = new Plush @select
+
+      @values = []
+      @values.push("test_model=#{i}") for i in [1,2,3]
 
     describe '#addOptionFor', ->
       beforeEach ->
-        @plush.addOptionFor $('li[data-value="1"]', @plush.list)
-        @plush.addOptionFor $('li[data-value="2"]', @plush.list)
-        @plush.addOptionFor $('li[data-value="3"]', @plush.list)
+        @plush.addOptionFor( $("li[data-value='#{i}']", @plush.list) ) for i in [1,2,3]
 
       it 'should set correct values', ->        
-        @select.serialize().should.equal ['color=1', 'color=2', 'color=3'].join('&')
+        @select.serialize().should.equal @values.join('&')
 
-      it 'should set placeholder values', ->
-        placeholders = $('.plush-multi-select-item', @plush.input).map -> 
-          $(this).html()
+      it 'should set placeholder values and in correct order', ->
+        placeholders = []
+        $('.plush-multi-select-item span', @plush.inputContainer).each -> 
+          placeholders.push $(this).html().replace /(\r\n|\n|\r| )/gm, ''
 
-        placeholders.should.equal ['AliceBlue', 'AntiqueWhite', 'Aqua']
+        placeholderValues = ['AliceBlue', 'AntiqueWhite', 'Aqua']
+        placeholders[i].should.equal(placeholderValues[i]) for i in [0,1,2]
 
-    decsribe 'click on list items', ->
+    describe 'click on list items', ->
       it 'should set correct values on click', ->
-        $('.plush-option-list li[data-value="1"] a',  @plush.container).click()
-        $('.plush-option-list li[data-value="2"] a',  @plush.container).click()
-        $('.plush-option-list li[data-value="3"] a',  @plush.container).click()
-        
-        @select.serialize().should.equal ['color=1', 'color=2', 'color=3'].join('&')
+        $(".plush-option-list li[data-value='#{i}'] a",  @plush.container).click() for i in [1,2,3]
+        @select.serialize().should.equal @values.join('&')
+
+    describe 'click on list items', ->
+      it 'should remove option on click on .plush-remove', ->
+        $(".plush-option-list li[data-value='#{i}'] a",  @plush.container).click() for i in [1,2,3]
+        @select.serialize().should.equal @values.join('&')
+
+        $(".plush-multi-select-item[data-value='2'] .plush-remove",  @plush.inputContainer).click()
+        @select.serialize().should.equal "test_model=1&test_model=3"
 
 
 

@@ -81,3 +81,11 @@
     = select_tag 'color', options_from_collection_for_select(@tags, 'id', 'name'), multiple: 'multiple', data: {toggle: 'plush', position: 'top'}
   .column
     %pre
+
+.columns
+  .column
+    %h3 Select tag
+    = select_tag 'color', options_from_collection_for_select(@tags, 'id', 'name', [2, 4, 8]), multiple: 'multiple', data: {toggle: 'plush', position: 'top'}
+  .column
+    %pre
+

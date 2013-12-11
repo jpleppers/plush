@@ -31,6 +31,8 @@ class @Plush
       
     @list.addClass @options.listItemTemplate.replace(/\_/g, '-')
     @container.addClass "position-#{@options.position}"
+    @container.addClass "plush-multiple" if @options.multiple?
+    
     @element.attr 'tabindex', -1
 
     if $('option[selected]', @element).length > 0 && !@options.multiple 
@@ -46,15 +48,32 @@ class @Plush
       else
         @createListFromOptions()
 
+    if @options.multiple
+      selectedOptions = $('option[selected]', @element)
+      @element.html('')
+
+      for option in selectedOptions
+        $option = $(option)
+        @addMultiSelectItem $option.html(), $option.val() 
+
+      
+
     # Add placeholder to select if data attribute
-    if @element.attr('placeholder')?
-      @element.prop('selectedIndex', -1)
-    else
-      @setOptionFor $('li:first-child', @list)
+    unless @options.multiple
+      if @element.attr('placeholder')?
+        @element.prop('selectedIndex', -1)
+      else
+        @setOptionFor $('li:first-child', @list)
 
     @inputContainer.on 'click', '.plush-placeholder, .plush-caret', (event) =>
       event.preventDefault()
       @show()
+    .on 'click', '.plush-remove', (event) =>
+      event.preventDefault()
+      optionContainer = $(event.currentTarget).parents('.plush-multi-select-item').first()
+      @removeOption optionContainer.data('value')
+      optionContainer.remove()
+
 
     # User event behaviour
     @container.on 'blur', 'input, a', =>
@@ -64,23 +83,24 @@ class @Plush
       @show() unless @inputContainer.hasClass 'opened'
     .on 'keyup', (event) =>
       event.stopPropagation()
-      @handleInputKeyPress(event)      
+      @handleInputKeyPress(event)
 
     @list.on 'click', 'a', (event) =>
       event.preventDefault()
       event.stopPropagation()
+      $item = $(event.currentTarget).parents('li').first()
       if @options.multiple
-        @addOptionFor $(event.currentTarget).parents('li').first()
+        @addOptionFor $item
       else
-        @setOptionFor $(event.currentTarget).parents('li').first()
-        @hide()
+        @setOptionFor $item
+        @hide true
     .on 'keydown', 'a', (event) =>
       event.preventDefault()
       event.stopPropagation()
     .on 'keyup', 'a', (event) =>
       event.preventDefault()
       event.stopPropagation()
-      @handleListKeyPress(event)      
+      @handleListKeyPress(event)
 
     @element.trigger 'initialized'
     return @
@@ -100,11 +120,9 @@ class @Plush
     $anchor = $(event.currentTarget)
 
     # Up / Down key
-    if event.keyCode == 38 || event.keyCode == 40  
-
+    if event.keyCode == 38 || event.keyCode == 40
       $link = @prevAnchor($anchor) if event.keyCode == 38
       $link = @nextAnchor($anchor) if event.keyCode == 40
-
       if !$link.length > 0 then @input.focus() else $link.focus()
 
     # Escape key
@@ -114,8 +132,12 @@ class @Plush
     # Enter key
     if event.keyCode == 13
       $anchor = $(event.currentTarget)
-      @setOptionFor $anchor.parents('li').first()
-      $anchor.blur()
+      $item = $anchor.parents('li').first()
+      if @options.multiple?
+        @addOptionFor $item
+      else
+        @setOptionFor $item
+        $anchor.blur()      
 
   setDefaultOption: (key, value) ->
     unless @options[key]?
@@ -128,9 +150,29 @@ class @Plush
     @element.trigger 'change'
 
   addOptionFor: (listItem) ->
-    $item = $.handlebar 'plush_multi_select_item', {label: listItem.data('label'), value: listItem.data('value')}
-    @inputContainer.prepend $item
+    value = listItem.data('value')
+
+    if $("option[value='#{value}']", @element).length == 0
+      @addMultiSelectItem listItem.data('label'), value
+      
+  addMultiSelectItem: (label, value) ->
+    $item = $.handlebar @options.multiSelectTemplate, {label: label, value: value}
+    if $('.plush-multi-select-item', @inputContainer).length > 0
+        $('.plush-multi-select-item', @inputContainer).last().after $item
+      else
+        @inputContainer.prepend $item
+
+      @element.append "<option value=#{value} selected>#{label}</option>"
+      @element.trigger 'change'
+
+  removeOption: (value) ->
+    $("option[value=#{value}]", @element).removeAttr('selected')
+
+    if @options.multiple
+      $("option[value=#{value}]", @element).remove()
+
     @element.trigger 'change'
+
 
   nextAnchor: (anchor) ->
     $li = anchor.parents('li').first()
@@ -216,11 +258,12 @@ class @Plush
   search: (query) ->
     matcher = new RegExp(query, 'i')
     $('.plush-list-item a', @container).each ->
-      $element = $(this)
-      if matcher.test($element.html())
-        $element.parents('.plush-list-item').first().removeClass('hidden')
+      $listElement = $(this).parents('.plush-list-item').first()
+
+      if matcher.test($(this).html())
+        $listElement.removeClass('hidden') unless $listElement.hasClass('disabled')
       else
-        $element.parents('.plush-list-item').first().addClass('hidden')
+        $listElement.addClass('hidden')
 
     $('.plush-optgroup', @container).each ->
       $element = $(this)
@@ -250,6 +293,10 @@ class @Plush
   hideNoResults: ->
     $('.plush-no-results', @list).hide()
 
+
+  resizeInput: ->
+
+
   # Input togglers for autocompletion behaviour
   show: ->
     @placeholder.hide()
@@ -258,8 +305,8 @@ class @Plush
     @list.show()
     @input.focus() unless @input.is(":focus")
 
-  hide: ->
-    unless @hasFocus()
+  hide: (force = false) ->
+    if !@hasFocus() || force
       unless @options.multiple
         @placeholder.show()
         @input.hide()
@@ -280,4 +327,5 @@ class @Plush
 
 $ ->
   $("[data-toggle='plush']").plush()
-    
+
+
