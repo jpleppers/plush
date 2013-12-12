@@ -69,7 +69,7 @@ describe 'Plush', ->
         @select.serialize().should.equal 'test_model=6'
 
       it 'should set correct value on click', ->
-        $('.plush-option-list li[data-value="4"] a',  @plush.container).click()
+        $('.plush-option-list li[data-value="4"] a',  @plush.container).trigger 'mousedown'
         @select.val().should.equal '4'
         @select.serialize().should.equal 'test_model=4'
 
@@ -134,7 +134,7 @@ describe 'Plush', ->
         @select.serialize().should.equal 'test_model=6'
 
       it 'should set correct value on click', ->
-        $('.plush-option-list li[data-value="4"] a',  @plush.container).click()
+        $('.plush-option-list li[data-value="4"] a',  @plush.container).trigger 'mousedown'
         @select.val().should.equal '4'
 
   context 'with optgroups', ->
@@ -152,7 +152,7 @@ describe 'Plush', ->
         @select.serialize().should.equal 'color=137'
 
       it 'should set correct value on click', ->
-        $('.plush-option-list li[data-value="137"] a',  @plush.container).click()
+        $('.plush-option-list li[data-value="137"] a',  @plush.container).trigger 'mousedown'
         @select.val().should.equal '137'
 
   context 'with multiple select', ->
@@ -181,22 +181,14 @@ describe 'Plush', ->
 
     describe 'click on list items', ->
       it 'should set correct values on click', ->
-        $(".plush-option-list li[data-value='#{i}'] a",  @plush.container).click() for i in [1,2,3]
+        $(".plush-option-list li[data-value='#{i}'] a",  @plush.container).trigger('mousedown') for i in [1,2,3]
         @select.serialize().should.equal @values.join('&')
 
     describe 'click on list items', ->
       it 'should remove option on click on .plush-remove', ->
-        $(".plush-option-list li[data-value='#{i}'] a",  @plush.container).click() for i in [1,2,3]
+        $(".plush-option-list li[data-value='#{i}'] a",  @plush.container).trigger('mousedown') for i in [1,2,3]
         @select.serialize().should.equal @values.join('&')
 
         $(".plush-multi-select-item[data-value='2'] .plush-remove",  @plush.inputContainer).click()
         @select.serialize().should.equal "test_model=1&test_model=3"
-
-
-
-
-
-
-
-
 

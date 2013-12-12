@@ -18,10 +18,10 @@
     border-bottom: 1px solid transparent
 
     &.plush-list-item
-      &:nth-child(even)
+      &:nth-child(odd)
         background-color: $listAlternate
     
-      &:hover
+      &:hover, a:focus
         background-color: $listHover
         border-color: $ligthBlue
         text-shadow: 0 1px 1px rgba(black, 0.25)
@@ -29,8 +29,6 @@
 
         a, .title
           color: white
-        .description
-          color: $lighterGray
 
     a, .title
       text-decoration: none
@@ -38,7 +36,6 @@
       display: block
 
     a:focus
-      background-color: $blue
       color: white
       outline: 0
 

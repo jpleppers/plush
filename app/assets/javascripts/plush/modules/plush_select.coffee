@@ -85,15 +85,17 @@ class @Plush
       event.stopPropagation()
       @handleInputKeyPress(event)
 
-    @list.on 'click', 'a', (event) =>
+    @list.on 'mousedown', 'a', (event) =>
       event.preventDefault()
       event.stopPropagation()
       $item = $(event.currentTarget).parents('li').first()
       if @options.multiple
         @addOptionFor $item
+        @hide()
       else
         @setOptionFor $item
-        @hide true
+    .on 'click', 'a', (event) =>
+      event.preventDefault()
     .on 'keydown', 'a', (event) =>
       event.preventDefault()
       event.stopPropagation()
@@ -272,6 +274,7 @@ class @Plush
       else 
         $element.show()
 
+    @resizeList()
     @checkResults()
 
   checkResults: ->
@@ -293,9 +296,12 @@ class @Plush
   hideNoResults: ->
     $('.plush-no-results', @list).hide()
 
-
+  # Dynamic dimensions
   resizeInput: ->
 
+  resizeList: ->
+    if @options.position == 'top'
+      @list.css 'top', "-#{@list.outerHeight(true)}px"
 
   # Input togglers for autocompletion behaviour
   show: ->
