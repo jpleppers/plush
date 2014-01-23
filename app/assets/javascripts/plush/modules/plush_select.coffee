@@ -4,7 +4,7 @@ class @Plush
     @element.hide()
     @element.wrap('<div class="plush-container"></div>')
     @container = @element.parent()
-    @container.append $.handlebar('plush_input', {placeholder: @element.attr('placeholder')})  
+    @container.append $.handlebar('plush_input', {placeholder: @element.attr('placeholder')})
 
     @list = $('.plush-option-list', @container)
     @inputContainer = $('.plush-input', @container)
@@ -12,6 +12,8 @@ class @Plush
     @input = $('input', @inputContainer)
     @options.multiple = @options.multiple? || @element.attr('multiple')?
     @searchWithAjax = @element.data('query')?
+
+    console.log @options.multiple
 
     # Option setting
     @dataDefaults = {}
@@ -28,14 +30,14 @@ class @Plush
 
     for key, value of defaults
       @setDefaultOption key, value
-      
+
     @list.addClass @options.listItemTemplate.replace(/\_/g, '-')
     @container.addClass "position-#{@options.position}"
     @container.addClass "plush-multiple" if @options.multiple?
-    
+
     @element.attr 'tabindex', -1
 
-    if $('option[selected]', @element).length > 0 && !@options.multiple 
+    if $('option[selected]', @element).length > 0 && !@options.multiple
       @placeholder.html $('option[selected]', @element).html()
       @input.val $('option[selected]', @element).html()
 
@@ -43,7 +45,7 @@ class @Plush
     if @options.url?
       @createListFromSource()
     else
-      if $('optgroup', @element).length > 0 
+      if $('optgroup', @element).length > 0
         @createListFromGroupedOptions()
       else
         @createListFromOptions()
@@ -54,9 +56,9 @@ class @Plush
 
       for option in selectedOptions
         $option = $(option)
-        @addMultiSelectItem $option.html(), $option.val() 
+        @addMultiSelectItem $option.html(), $option.val()
 
-      
+
 
     # Add placeholder to select if data attribute
     unless @options.multiple
@@ -91,9 +93,9 @@ class @Plush
       $item = $(event.currentTarget).parents('li').first()
       if @options.multiple
         @addOptionFor $item
-        @hide()
       else
         @setOptionFor $item
+        @hide(true)
     .on 'click', 'a', (event) =>
       event.preventDefault()
     .on 'keydown', 'a', (event) =>
@@ -117,7 +119,7 @@ class @Plush
         @delayedSearch()
       else
         @search @input.val()
-  
+
   handleListKeyPress: (event) ->
     $anchor = $(event.currentTarget)
 
@@ -139,7 +141,7 @@ class @Plush
         @addOptionFor $item
       else
         @setOptionFor $item
-        $anchor.blur()      
+        $anchor.blur()
 
   setDefaultOption: (key, value) ->
     unless @options[key]?
@@ -156,7 +158,7 @@ class @Plush
 
     if $("option[value='#{value}']", @element).length == 0
       @addMultiSelectItem listItem.data('label'), value
-      
+
   addMultiSelectItem: (label, value) ->
     $item = $.handlebar @options.multiSelectTemplate, {label: label, value: value}
     if $('.plush-multi-select-item', @inputContainer).length > 0
@@ -195,10 +197,10 @@ class @Plush
     $('optgroup', @element).each (index, optGroup) =>
       $optGroup = $(optGroup)
       $group = $.handlebar 'plush_optgroup_item', {label: $optGroup.attr('label')}
-      
+
       $('option', $optGroup).each (index, item) =>
         $('.plush-optgroup-list', $group).append(@createListItemFromOption(item))
-      
+
       @list.append $group
 
   createListItemFromOption: (optionItem) ->
@@ -211,8 +213,8 @@ class @Plush
   # JSON based building
   createListFromSource: ->
     @inputContainer.addClass 'loading'
-    
-    ajaxOptions = 
+
+    ajaxOptions =
       url: @options.url
       type: "get"
       dataType: "json"
@@ -271,7 +273,7 @@ class @Plush
       $element = $(this)
       if $('.plush-list-item:not(.hidden)', $element).length == 0
         $element.hide()
-      else 
+      else
         $element.show()
 
     @resizeList()
@@ -283,7 +285,7 @@ class @Plush
     else
       @hideNoResults()
 
-  # No results message 
+  # No results message
   showNoResults: ->
     msg = @options.noResults + @input.val()
 
@@ -306,7 +308,7 @@ class @Plush
   # Input togglers for autocompletion behaviour
   show: ->
     @placeholder.hide()
-    @input.css 'display', 'block'    
+    @input.css 'display', 'block'
     @inputContainer.addClass 'opened'
     @list.show()
     @input.focus() unless @input.is(":focus")
