@@ -49,7 +49,7 @@
 
 .plush-input {
   margin: 0;
-  padding: 4px; }
+  padding: 4px 30px 4px 4px; }
   .plush-input input, .plush-input .plush-placeholder {
     padding: 2px 5px;
     margin: 0;
@@ -84,7 +84,12 @@
       padding-left: 20px; }
 
 .plush-container.position-top .plush-option-list {
-  bottom: 34px; }
+  top: -272px; }
+
+.plush-container.plush-multiple .plush-input .plush-multi-select-item {
+  float: left;
+  border: 1px solid #cccccc;
+  margin: 0 5px 5px 0; }
 
 .plush-caret {
   width: 0;
@@ -199,21 +204,22 @@
     padding: 3px 5px;
     line-height: 2em; }
   .plush-option-list li {
-    line-height: 2em; }
-    .plush-option-list li.plush-list-item:nth-child(even) {
+    line-height: 1.8em;
+    border-top: 1px solid transparent;
+    border-bottom: 1px solid transparent; }
+    .plush-option-list li.plush-list-item:nth-child(odd) {
       background-color: whitesmoke; }
-    .plush-option-list li.plush-list-item:hover {
-      background-color: #0099ff; }
-      .plush-option-list li.plush-list-item:hover a, .plush-option-list li.plush-list-item:hover .title {
+    .plush-option-list li.plush-list-item:hover, .plush-option-list li.plush-list-item a:focus {
+      background-color: #0099ff;
+      border-color: #66c1ff;
+      text-shadow: 0 1px 1px rgba(0, 0, 0, 0.25); }
+      .plush-option-list li.plush-list-item:hover a, .plush-option-list li.plush-list-item:hover .title, .plush-option-list li.plush-list-item a:focus a, .plush-option-list li.plush-list-item a:focus .title {
         color: white; }
-      .plush-option-list li.plush-list-item:hover .description {
-        color: #eeeeee; }
     .plush-option-list li a, .plush-option-list li .title {
       text-decoration: none;
       color: #333333;
       display: block; }
     .plush-option-list li a:focus {
-      background-color: #0099ff;
       color: white;
       outline: 0; }
     .plush-option-list li .description {
@@ -244,3 +250,22 @@
   -webkit-border-top-left-radius: 4px;
   -moz-border-radius-topleft: 4px;
   border-top-left-radius: 4px; }
+
+.plush-container.plush-multiple .plush-input .plush-multi-select-item {
+  padding: 3px 5px;
+  background-color: #0099ff;
+  border-color: #66c1ff;
+  color: white;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.25);
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  border-radius: 5px; }
+.plush-container.plush-multiple .plush-remove {
+  width: 15px;
+  height: 15px;
+  display: inline-block;
+  vertical-align: text-top;
+  cursor: pointer;
+  background-image: url("plush/cross-white.png");
+  background-position: bottom center;
+  background-repeat: no-repeat; }

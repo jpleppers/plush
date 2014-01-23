@@ -117,11 +117,11 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   if (stack1 = helpers.value) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = (depth0 && depth0.value); stack1 = typeof stack1 === functionType ? stack1.call(depth0, {hash:{},data:data}) : stack1; }
   buffer += escapeExpression(stack1)
-    + "'>\n  ";
+    + "'>\n  <span>";
   if (stack1 = helpers.label) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = (depth0 && depth0.label); stack1 = typeof stack1 === functionType ? stack1.call(depth0, {hash:{},data:data}) : stack1; }
   buffer += escapeExpression(stack1)
-    + "\n</div>\n";
+    + "</span>\n  <a class='plush-remove'></a>\n</div>\n";
   return buffer;
   });
 })();
@@ -144,7 +144,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 (function() {
   this.Plush = (function() {
     function Plush(element, options) {
-      var defaults, key, value,
+      var $option, defaults, key, option, selectedOptions, value, _i, _len,
         _this = this;
       this.element = element;
       this.options = options != null ? options : {};
@@ -177,6 +177,9 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
       }
       this.list.addClass(this.options.listItemTemplate.replace(/\_/g, '-'));
       this.container.addClass("position-" + this.options.position);
+      if (this.options.multiple != null) {
+        this.container.addClass("plush-multiple");
+      }
       this.element.attr('tabindex', -1);
       if ($('option[selected]', this.element).length > 0 && !this.options.multiple) {
         this.placeholder.html($('option[selected]', this.element).html());
@@ -191,14 +194,31 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
           this.createListFromOptions();
         }
       }
-      if (this.element.attr('placeholder') != null) {
-        this.element.prop('selectedIndex', -1);
-      } else {
-        this.setOptionFor($('li:first-child', this.list));
+      if (this.options.multiple) {
+        selectedOptions = $('option[selected]', this.element);
+        this.element.html('');
+        for (_i = 0, _len = selectedOptions.length; _i < _len; _i++) {
+          option = selectedOptions[_i];
+          $option = $(option);
+          this.addMultiSelectItem($option.html(), $option.val());
+        }
+      }
+      if (!this.options.multiple) {
+        if (this.element.attr('placeholder') != null) {
+          this.element.prop('selectedIndex', -1);
+        } else {
+          this.setOptionFor($('li:first-child', this.list));
+        }
       }
       this.inputContainer.on('click', '.plush-placeholder, .plush-caret', function(event) {
         event.preventDefault();
         return _this.show();
+      }).on('click', '.plush-remove', function(event) {
+        var optionContainer;
+        event.preventDefault();
+        optionContainer = $(event.currentTarget).parents('.plush-multi-select-item').first();
+        _this.removeOption(optionContainer.data('value'));
+        return optionContainer.remove();
       });
       this.container.on('blur', 'input, a', function() {
         return setTimeout(_this.bind(_this.hide), 100);
@@ -211,15 +231,19 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         event.stopPropagation();
         return _this.handleInputKeyPress(event);
       });
-      this.list.on('click', 'a', function(event) {
+      this.list.on('mousedown', 'a', function(event) {
+        var $item;
         event.preventDefault();
         event.stopPropagation();
+        $item = $(event.currentTarget).parents('li').first();
         if (_this.options.multiple) {
-          return _this.addOptionFor($(event.currentTarget).parents('li').first());
-        } else {
-          _this.setOptionFor($(event.currentTarget).parents('li').first());
+          _this.addOptionFor($item);
           return _this.hide();
+        } else {
+          return _this.setOptionFor($item);
         }
+      }).on('click', 'a', function(event) {
+        return event.preventDefault();
       }).on('keydown', 'a', function(event) {
         event.preventDefault();
         return event.stopPropagation();
@@ -251,7 +275,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     };
 
     Plush.prototype.handleListKeyPress = function(event) {
-      var $anchor, $link;
+      var $anchor, $item, $link;
       $anchor = $(event.currentTarget);
       if (event.keyCode === 38 || event.keyCode === 40) {
         if (event.keyCode === 38) {
@@ -271,8 +295,13 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
       }
       if (event.keyCode === 13) {
         $anchor = $(event.currentTarget);
-        this.setOptionFor($anchor.parents('li').first());
-        return $anchor.blur();
+        $item = $anchor.parents('li').first();
+        if (this.options.multiple != null) {
+          return this.addOptionFor($item);
+        } else {
+          this.setOptionFor($item);
+          return $anchor.blur();
+        }
       }
     };
 
@@ -293,12 +322,33 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     };
 
     Plush.prototype.addOptionFor = function(listItem) {
+      var value;
+      value = listItem.data('value');
+      if ($("option[value='" + value + "']", this.element).length === 0) {
+        return this.addMultiSelectItem(listItem.data('label'), value);
+      }
+    };
+
+    Plush.prototype.addMultiSelectItem = function(label, value) {
       var $item;
-      $item = $.handlebar('plush_multi_select_item', {
-        label: listItem.data('label'),
-        value: listItem.data('value')
+      $item = $.handlebar(this.options.multiSelectTemplate, {
+        label: label,
+        value: value
       });
-      this.inputContainer.prepend($item);
+      if ($('.plush-multi-select-item', this.inputContainer).length > 0) {
+        $('.plush-multi-select-item', this.inputContainer).last().after($item);
+      } else {
+        this.inputContainer.prepend($item);
+      }
+      this.element.append("<option value=" + value + " selected>" + label + "</option>");
+      return this.element.trigger('change');
+    };
+
+    Plush.prototype.removeOption = function(value) {
+      $("option[value=" + value + "]", this.element).removeAttr('selected');
+      if (this.options.multiple) {
+        $("option[value=" + value + "]", this.element).remove();
+      }
       return this.element.trigger('change');
     };
 
@@ -431,12 +481,14 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
       var matcher;
       matcher = new RegExp(query, 'i');
       $('.plush-list-item a', this.container).each(function() {
-        var $element;
-        $element = $(this);
-        if (matcher.test($element.html())) {
-          return $element.parents('.plush-list-item').first().removeClass('hidden');
+        var $listElement;
+        $listElement = $(this).parents('.plush-list-item').first();
+        if (matcher.test($(this).html())) {
+          if (!$listElement.hasClass('disabled')) {
+            return $listElement.removeClass('hidden');
+          }
         } else {
-          return $element.parents('.plush-list-item').first().addClass('hidden');
+          return $listElement.addClass('hidden');
         }
       });
       $('.plush-optgroup', this.container).each(function() {
@@ -448,6 +500,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
           return $element.show();
         }
       });
+      this.resizeList();
       return this.checkResults();
     };
 
@@ -474,6 +527,14 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
       return $('.plush-no-results', this.list).hide();
     };
 
+    Plush.prototype.resizeInput = function() {};
+
+    Plush.prototype.resizeList = function() {
+      if (this.options.position === 'top') {
+        return this.list.css('top', "-" + (this.list.outerHeight(true)) + "px");
+      }
+    };
+
     Plush.prototype.show = function() {
       this.placeholder.hide();
       this.input.css('display', 'block');
@@ -484,8 +545,11 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
       }
     };
 
-    Plush.prototype.hide = function() {
-      if (!this.hasFocus()) {
+    Plush.prototype.hide = function(force) {
+      if (force == null) {
+        force = false;
+      }
+      if (!this.hasFocus() || force) {
         if (!this.options.multiple) {
           this.placeholder.show();
           this.input.hide();
