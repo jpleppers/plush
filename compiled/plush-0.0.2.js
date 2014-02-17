@@ -160,8 +160,10 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
       this.input = $('input', this.inputContainer);
       this.options.multiple = (this.options.multiple != null) || (this.element.attr('multiple') != null);
       this.searchWithAjax = this.element.data('query') != null;
-      console.log(this.options.multiple);
-      this.dataDefaults = {};
+      this.setDefaultDataOptions();
+      if (this.dataDefaults == null) {
+        this.dataDefaults = {};
+      }
       this.queryDefault = 'q';
       defaults = {
         noResults: 'No results found for: ',
@@ -316,6 +318,10 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
       }
     };
 
+    Plush.prototype.setDefaultDataOptions = function() {
+      return this.dataDefaults = this.getDefaultDataFromElement(this.element.get(0));
+    };
+
     Plush.prototype.setOptionFor = function(listItem) {
       this.placeholder.html(listItem.data('label'));
       this.element.val(listItem.data('value'));
@@ -400,7 +406,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     Plush.prototype.createListItemFromOption = function(optionItem) {
       var $option, options;
       $option = $(optionItem);
-      options = this.getAttributesFromElement(optionItem);
+      options = this.getDataFromElement(optionItem);
       options.value = $option.val();
       options.label = $option.html();
       return $.handlebar(this.options.listItemTemplate, options);
@@ -415,7 +421,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         type: "get",
         dataType: "json"
       };
-      dataOptions = this.dataDefaults;
+      dataOptions = $.extend({}, this.dataDefaults);
       if (this.searchWithAjax) {
         dataOptions[this.queryDefault] = this.input.val();
       }
@@ -442,10 +448,8 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         if ($.inArray('value', Object.keys(result[0])) >= 0) {
           for (_i = 0, _len = result.length; _i < _len; _i++) {
             item = result[_i];
-            if (item['label'] == null) {
-              item['label'] = item[this.options.labelMethod];
-            }
-            this.list.append($.handlebar(this.options.listItemTemplate, item));
+            this.checkItemLabel(item);
+            this.list.append(this.createListItemFromJson(item));
             this.element.append("<option value=" + item.value + ">" + item.label + "</option>");
           }
         } else {
@@ -458,10 +462,8 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
             _ref = groupObject[groupName];
             for (_k = 0, _len2 = _ref.length; _k < _len2; _k++) {
               item = _ref[_k];
-              if (item['label'] == null) {
-                item['label'] = item[this.options.labelMethod];
-              }
-              $('ul', $group).append($.handlebar(this.options.listItemTemplate, item));
+              this.checkItemLabel(item);
+              $('ul', $group).append(this.createListItemFromJson(item));
             }
             this.list.append($group);
           }
@@ -469,6 +471,16 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         this.input.focus();
         return this.checkResults();
       }
+    };
+
+    Plush.prototype.checkItemLabel = function(item) {
+      if (item['label'] == null) {
+        return item['label'] = item[this.options.labelMethod];
+      }
+    };
+
+    Plush.prototype.createListItemFromJson = function(item) {
+      return $.handlebar(this.options.listItemTemplate, item);
     };
 
     Plush.prototype.delayedSearch = function() {
@@ -560,17 +572,25 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
       }
     };
 
-    Plush.prototype.getAttributesFromElement = function(element) {
+    Plush.prototype.getAttributesFromElement = function(element, attr_regexp) {
       var attr, options, _i, _len, _ref;
       options = {};
       _ref = element.attributes;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         attr = _ref[_i];
-        if (attr.nodeName.match(/^data-/)) {
-          options[attr.nodeName.replace(/^data-/, '')] = attr.nodeValue;
+        if (attr.nodeName.match(attr_regexp)) {
+          options[attr.nodeName.replace(attr_regexp, '')] = attr.nodeValue;
         }
       }
       return options;
+    };
+
+    Plush.prototype.getDataFromElement = function(element) {
+      return this.getAttributesFromElement(element, /^data-/);
+    };
+
+    Plush.prototype.getDefaultDataFromElement = function(element) {
+      return this.getAttributesFromElement(element, /^data-default-/);
     };
 
     Plush.prototype.bind = function(Method) {

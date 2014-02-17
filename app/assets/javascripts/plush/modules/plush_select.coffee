@@ -13,10 +13,9 @@ class @Plush
     @options.multiple = @options.multiple? || @element.attr('multiple')?
     @searchWithAjax = @element.data('query')?
 
-    console.log @options.multiple
-
     # Option setting
-    @dataDefaults = {}
+    @setQueryDataOptions()
+    @queryData = {} unless @queryData?
     @queryDefault = 'q'
 
     defaults =
@@ -57,8 +56,6 @@ class @Plush
       for option in selectedOptions
         $option = $(option)
         @addMultiSelectItem $option.html(), $option.val()
-
-
 
     # Add placeholder to select if data attribute
     unless @options.multiple
@@ -148,6 +145,9 @@ class @Plush
       dataAttrName = key.replace /([A-Z])/g, ($1) -> "-" + $1.toLowerCase()
       @options[key] = @element.data(dataAttrName) || value
 
+  setQueryDataOptions: ->
+    @queryData = @getQueryDataFromElement(@element.get(0))
+
   setOptionFor: (listItem) ->
     @placeholder.html listItem.data('label')
     @element.val listItem.data('value')
@@ -188,7 +188,11 @@ class @Plush
     prev = $('a', $li.prev())
     if prev && !prev.parents('li').first().hasClass('hidden') then prev else @prevAnchor(prev)
 
+
+  # --------------------------------------
   # <option> based building
+  # --------------------------------------
+
   createListFromOptions: ->
     $('option', @element).each (index, item) =>
       @list.append @createListItemFromOption(item)
@@ -205,12 +209,16 @@ class @Plush
 
   createListItemFromOption: (optionItem) ->
     $option = $(optionItem)
-    options = @getAttributesFromElement(optionItem)
+    options = @getDataFromElement(optionItem)
     options.value = $option.val()
     options.label = $option.html()
     $.handlebar(@options.listItemTemplate, options)
 
+
+  # --------------------------------------
   # JSON based building
+  # --------------------------------------
+
   createListFromSource: ->
     @inputContainer.addClass 'loading'
 
@@ -219,7 +227,7 @@ class @Plush
       type: "get"
       dataType: "json"
 
-    dataOptions = @dataDefaults
+    dataOptions = $.extend {}, @queryData
     dataOptions[@queryDefault] = @input.val() if @searchWithAjax
     ajaxOptions.data = dataOptions
 
@@ -236,10 +244,11 @@ class @Plush
   createListFromJSON: (result = []) ->
     @list.empty()
     if result? && !$.isEmptyObject(result)
+      # Check if result are grouped
       if $.inArray('value', Object.keys(result[0])) >= 0
         for item in result
-          item['label'] = item[@options.labelMethod] unless item['label']?
-          @list.append $.handlebar(@options.listItemTemplate, item)
+          @checkItemLabel(item)
+          @list.append @createListItemFromJson(item)
           @element.append "<option value=#{item.value}>#{item.label}</option>"
       else
         for groupObject in result
@@ -247,13 +256,24 @@ class @Plush
           $group = $.handlebar(@options.optgroupTemplate, {label: groupName})
 
           for item in groupObject[groupName]
-            item['label'] = item[@options.labelMethod] unless item['label']?
-            $('ul', $group).append $.handlebar(@options.listItemTemplate, item)
+            @checkItemLabel(item)
+            $('ul', $group).append @createListItemFromJson(item)
 
           @list.append $group
 
       @input.focus()
       @checkResults()
+
+  checkItemLabel: (item) ->
+    item['label'] = item[@options.labelMethod] unless item['label']?
+
+  createListItemFromJson: (item) ->
+    $.handlebar(@options.listItemTemplate, item)
+
+
+  # --------------------------------------
+  # Search methods
+  # --------------------------------------
 
   delayedSearch: ->
     clearTimeout(@timer) if @timer?
@@ -323,11 +343,17 @@ class @Plush
       @list.hide()
 
   # Utilities
-  getAttributesFromElement: (element) ->
+  getAttributesFromElement: (element, attr_regexp) ->
     options = {}
     for attr in element.attributes
-      options[attr.nodeName.replace(/^data-/, '')]= attr.nodeValue if attr.nodeName.match(/^data-/)
+      options[attr.nodeName.replace(attr_regexp, '')]= attr.nodeValue if attr.nodeName.match(attr_regexp)
     options
+
+  getDataFromElement: (element) ->
+    @getAttributesFromElement element, /^data-/
+
+  getQueryDataFromElement: (element) ->
+    @getAttributesFromElement element, /^data-query-/
 
   bind: ( Method ) ->
     () =>

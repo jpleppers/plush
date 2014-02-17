@@ -20,6 +20,14 @@ describe 'Plush', ->
       @plush.setDefaultOption 'foo', 'bar'
       @plush.options.foo.should.equal 'baz'
 
+    it 'should set default data attributes for ajax call', ->
+      Object.keys(@plush.queryData).should.have.length(2)
+      @plush.queryData.should.have.property('foo')
+      @plush.queryData.should.have.property('baz')
+      @plush.queryData.foo.should.equal('bar')
+      @plush.queryData.baz.should.equal('qux')
+
+
   context 'with default options', ->
     beforeEach ->
       @select = $.renderTemplate 'select_tag'
@@ -34,7 +42,7 @@ describe 'Plush', ->
       before ->
         @xhr = sinon.useFakeXMLHttpRequest()
         @requests = []
-        @xhr.onCreate = (req) => 
+        @xhr.onCreate = (req) =>
           @requests.push(req)
 
       after -> @xhr.restore()
@@ -51,6 +59,7 @@ describe 'Plush', ->
 
         @requests.length.should.equal 1
         @requests[0].url.should.match /tags/
+        @requests[0].url.should.match /foo=bar&baz=qux/
         @requests[0].requestHeaders.Accept.should.match /json/
         @requests[0].method.should.equal 'GET'
         @requests = []
@@ -62,9 +71,9 @@ describe 'Plush', ->
         @plush.search 'black'
         $('li:not(.hidden)', @plush.list).length.should.equal 1
 
-  
+
     describe '#setOptionFor', ->
-      it 'should set correct value', ->      
+      it 'should set correct value', ->
         @plush.setOptionFor $('li[data-value="6"]', @plush.list)
         @select.serialize().should.equal 'test_model=6'
 
@@ -77,7 +86,7 @@ describe 'Plush', ->
       it 'should select next anchor', ->
         anchor = $('li:first-child a', @plush.list)
         @plush.nextAnchor(anchor).html().should.equal 'AntiqueWhite'
-      
+
       it 'should select next anchor whith filtered results', ->
         @plush.search 'bl'
         anchor = $('li:first-child:not(.hidden) a', @plush.list)
@@ -87,12 +96,12 @@ describe 'Plush', ->
         @plush.search 'azure'
         anchor = $('li:first-child a', @plush.list)
         @plush.prevAnchor(anchor).length.should.equal 0
-    
+
     describe '#prevAnchor', ->
       it 'should select previous anchor', ->
         anchor = $('li:last-child a', @plush.list)
         @plush.prevAnchor(anchor).html().should.equal 'BlanchedAlmond'
-      
+
       it 'should select next anchor whith filtered results', ->
         @plush.search 'bl'
         anchor = $('li[data-value="8"] a', @plush.list)
@@ -129,7 +138,7 @@ describe 'Plush', ->
       $('li', @plush.list).filter('.plush-imagebox').length.should.equal 10
 
     describe '#setOptionFor', ->
-      it 'should set correct value', ->      
+      it 'should set correct value', ->
         @plush.setOptionFor $('li[data-value="6"]', @plush.list)
         @select.serialize().should.equal 'test_model=6'
 
@@ -168,12 +177,12 @@ describe 'Plush', ->
       beforeEach ->
         @plush.addOptionFor( $("li[data-value='#{i}']", @plush.list) ) for i in [1,2,3]
 
-      it 'should set correct values', ->        
+      it 'should set correct values', ->
         @select.serialize().should.equal @values.join('&')
 
       it 'should set placeholder values and in correct order', ->
         placeholders = []
-        $('.plush-multi-select-item span', @plush.inputContainer).each -> 
+        $('.plush-multi-select-item span', @plush.inputContainer).each ->
           placeholders.push $(this).html().replace /(\r\n|\n|\r| )/gm, ''
 
         placeholderValues = ['AliceBlue', 'AntiqueWhite', 'Aqua']
