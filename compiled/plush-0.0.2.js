@@ -160,9 +160,9 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
       this.input = $('input', this.inputContainer);
       this.options.multiple = (this.options.multiple != null) || (this.element.attr('multiple') != null);
       this.searchWithAjax = this.element.data('query') != null;
-      this.setDefaultDataOptions();
-      if (this.dataDefaults == null) {
-        this.dataDefaults = {};
+      this.setQueryDataOptions();
+      if (this.queryData == null) {
+        this.queryData = {};
       }
       this.queryDefault = 'q';
       defaults = {
@@ -318,8 +318,8 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
       }
     };
 
-    Plush.prototype.setDefaultDataOptions = function() {
-      return this.dataDefaults = this.getDefaultDataFromElement(this.element.get(0));
+    Plush.prototype.setQueryDataOptions = function() {
+      return this.queryData = this.getQueryDataFromElement(this.element.get(0));
     };
 
     Plush.prototype.setOptionFor = function(listItem) {
@@ -421,7 +421,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         type: "get",
         dataType: "json"
       };
-      dataOptions = $.extend({}, this.dataDefaults);
+      dataOptions = $.extend({}, this.queryData);
       if (this.searchWithAjax) {
         dataOptions[this.queryDefault] = this.input.val();
       }
@@ -589,8 +589,8 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
       return this.getAttributesFromElement(element, /^data-/);
     };
 
-    Plush.prototype.getDefaultDataFromElement = function(element) {
-      return this.getAttributesFromElement(element, /^data-default-/);
+    Plush.prototype.getQueryDataFromElement = function(element) {
+      return this.getAttributesFromElement(element, /^data-query-/);
     };
 
     Plush.prototype.bind = function(Method) {
