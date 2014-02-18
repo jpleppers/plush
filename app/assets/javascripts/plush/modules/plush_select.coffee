@@ -42,8 +42,8 @@ class @Plush
 
     # See if is <option> based or needs to get some JSON data
     if @options.url?
-      @createListFromSource()
-    else
+      @createListFromSource(true)
+    unless @options.url?
       if $('optgroup', @element).length > 0
         @createListFromGroupedOptions()
       else
@@ -219,7 +219,7 @@ class @Plush
   # JSON based building
   # --------------------------------------
 
-  createListFromSource: ->
+  createListFromSource: (initial = false)->
     @inputContainer.addClass 'loading'
 
     ajaxOptions =
@@ -232,7 +232,7 @@ class @Plush
     ajaxOptions.data = dataOptions
 
     $.ajax(ajaxOptions).done (result, status, xhr) =>
-      @createListFromJSON(result)
+      @createListFromJSON(result, initial)
 
     .always =>
       @inputContainer.removeClass 'loading'
@@ -241,7 +241,7 @@ class @Plush
   hasFocus: () ->
     $('*:focus', @container).length > 0
 
-  createListFromJSON: (result = []) ->
+  createListFromJSON: (result = [], initial = false) ->
     @list.empty()
     if result? && !$.isEmptyObject(result)
       # Check if result are grouped
@@ -261,7 +261,7 @@ class @Plush
 
           @list.append $group
 
-      @input.focus()
+      @input.focus() unless initial
       @checkResults()
 
   checkItemLabel: (item) ->

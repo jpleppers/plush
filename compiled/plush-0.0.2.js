@@ -189,8 +189,9 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         this.input.val($('option[selected]', this.element).html());
       }
       if (this.options.url != null) {
-        this.createListFromSource();
-      } else {
+        this.createListFromSource(true);
+      }
+      if (this.options.url == null) {
         if ($('optgroup', this.element).length > 0) {
           this.createListFromGroupedOptions();
         } else {
@@ -412,9 +413,12 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
       return $.handlebar(this.options.listItemTemplate, options);
     };
 
-    Plush.prototype.createListFromSource = function() {
+    Plush.prototype.createListFromSource = function(initial) {
       var ajaxOptions, dataOptions,
         _this = this;
+      if (initial == null) {
+        initial = false;
+      }
       this.inputContainer.addClass('loading');
       ajaxOptions = {
         url: this.options.url,
@@ -427,7 +431,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
       }
       ajaxOptions.data = dataOptions;
       return $.ajax(ajaxOptions).done(function(result, status, xhr) {
-        return _this.createListFromJSON(result);
+        return _this.createListFromJSON(result, initial);
       }).always(function() {
         _this.inputContainer.removeClass('loading');
         return _this.checkResults();
@@ -438,10 +442,13 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
       return $('*:focus', this.container).length > 0;
     };
 
-    Plush.prototype.createListFromJSON = function(result) {
+    Plush.prototype.createListFromJSON = function(result, initial) {
       var $group, groupName, groupObject, item, _i, _j, _k, _len, _len1, _len2, _ref;
       if (result == null) {
         result = [];
+      }
+      if (initial == null) {
+        initial = false;
       }
       this.list.empty();
       if ((result != null) && !$.isEmptyObject(result)) {
@@ -468,7 +475,9 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
             this.list.append($group);
           }
         }
-        this.input.focus();
+        if (!initial) {
+          this.input.focus();
+        }
         return this.checkResults();
       }
     };
