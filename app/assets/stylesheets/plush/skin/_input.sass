@@ -1,8 +1,8 @@
-.plush-input
+.plush-input-wrapper
   border: 1px solid $lightGray
   background-color: white
   +border-radius($borderRadius)
-  
+
   &.loading
     background-position: 0px center
     +animate(stripe-loading 1s infinite linear)
@@ -11,10 +11,10 @@
     border-bottom-width: 0
     +border-bottom-radius(0)
 
-  input     
+  input
     border: 0
 
-.plush-container.position-top .plush-input.opened
+.plush-container.position-top .plush-input-wrapper.opened
   border-bottom-width: 1px
   border-top-color: transparent
   border-bottom-color: $lightGray

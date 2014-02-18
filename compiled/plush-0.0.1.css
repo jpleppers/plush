@@ -47,19 +47,19 @@
     float: left;
     margin: 3px 10px 3px 0; }
 
-.plush-input {
+.plush-input-wrapper {
   margin: 0;
   padding: 4px 30px 4px 4px; }
-  .plush-input input, .plush-input .plush-placeholder {
+  .plush-input-wrapper input, .plush-input-wrapper .plush-placeholder {
     padding: 2px 5px;
     margin: 0;
     outline: none;
     line-height: 22px;
     height: 22px; }
-  .plush-input input {
+  .plush-input-wrapper input {
     display: none;
     background-color: transparent; }
-  .plush-input .plush-placeholder, .plush-input .plush-caret {
+  .plush-input-wrapper .plush-placeholder, .plush-input-wrapper .plush-caret {
     cursor: pointer; }
 
 .plush-option-list {
@@ -86,7 +86,7 @@
 .plush-container.position-top .plush-option-list {
   top: -272px; }
 
-.plush-container.plush-multiple .plush-input .plush-multi-select-item {
+.plush-container.plush-multiple .plush-input-wrapper .plush-multi-select-item {
   float: left;
   border: 1px solid #cccccc;
   margin: 0 5px 5px 0; }
@@ -105,7 +105,7 @@
     border-top: 6px solid #999999;
     display: block; }
 
-.plush-input.opened .plush-caret:before {
+.plush-input-wrapper.opened .plush-caret:before {
   border-top-width: 0px;
   border-bottom: 6px solid #999999; }
 
@@ -145,19 +145,19 @@
 .plush-imagebox img {
   max-height: 40px; }
 
-.plush-input {
+.plush-input-wrapper {
   border: 1px solid #cccccc;
   background-color: white;
   -webkit-border-radius: 4px;
   -moz-border-radius: 4px;
   border-radius: 4px; }
-  .plush-input.loading {
+  .plush-input-wrapper.loading {
     background-position: 0px center;
     animation: stripe-loading 1s infinite linear;
     -moz-animation: stripe-loading 1s infinite linear;
     -webkit-animation: stripe-loading 1s infinite linear;
     -o-animation: stripe-loading 1s infinite linear; }
-  .plush-input.opened {
+  .plush-input-wrapper.opened {
     border-bottom-width: 0;
     -webkit-border-bottom-right-radius: 0;
     -moz-border-radius-bottomright: 0;
@@ -165,10 +165,10 @@
     -webkit-border-bottom-left-radius: 0;
     -moz-border-radius-bottomleft: 0;
     border-bottom-left-radius: 0; }
-  .plush-input input {
+  .plush-input-wrapper input {
     border: 0; }
 
-.plush-container.position-top .plush-input.opened {
+.plush-container.position-top .plush-input-wrapper.opened {
   border-bottom-width: 1px;
   border-top-color: transparent;
   border-bottom-color: #cccccc;
@@ -251,7 +251,7 @@
   -moz-border-radius-topleft: 4px;
   border-top-left-radius: 4px; }
 
-.plush-container.plush-multiple .plush-input .plush-multi-select-item {
+.plush-container.plush-multiple .plush-input-wrapper .plush-multi-select-item {
   padding: 3px 5px;
   background-color: #0099ff;
   border-color: #66c1ff;

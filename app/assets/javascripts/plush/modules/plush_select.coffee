@@ -7,7 +7,7 @@ class @Plush
     @container.append $.handlebar('plush_input', {placeholder: @element.attr('placeholder')})
 
     @list = $('.plush-option-list', @container)
-    @inputContainer = $('.plush-input', @container)
+    @inputContainer = $('.plush-input-wrapper', @container)
     @placeholder = $('.plush-placeholder', @inputContainer)
     @input = $('input', @inputContainer)
     @options.multiple = @options.multiple? || @element.attr('multiple')?

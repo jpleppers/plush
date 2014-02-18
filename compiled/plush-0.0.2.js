@@ -69,11 +69,11 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression;
 
 
-  buffer += "<div class='plush-input'>\n  <div class='plush-placeholder'>";
+  buffer += "<div class='plush-input-wrapper'>\n  <div class='plush-placeholder'>";
   if (stack1 = helpers.placeholder) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = (depth0 && depth0.placeholder); stack1 = typeof stack1 === functionType ? stack1.call(depth0, {hash:{},data:data}) : stack1; }
   buffer += escapeExpression(stack1)
-    + "</div>\n  <input class='' type='text' value='";
+    + "</div>\n  <input class='plush-input' type='text' value='";
   if (stack1 = helpers.value) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = (depth0 && depth0.value); stack1 = typeof stack1 === functionType ? stack1.call(depth0, {hash:{},data:data}) : stack1; }
   buffer += escapeExpression(stack1)
@@ -155,7 +155,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         placeholder: this.element.attr('placeholder')
       }));
       this.list = $('.plush-option-list', this.container);
-      this.inputContainer = $('.plush-input', this.container);
+      this.inputContainer = $('.plush-input-wrapper', this.container);
       this.placeholder = $('.plush-placeholder', this.inputContainer);
       this.input = $('input', this.inputContainer);
       this.options.multiple = (this.options.multiple != null) || (this.element.attr('multiple') != null);

@@ -155,7 +155,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         placeholder: this.element.attr('placeholder')
       }));
       this.list = $('.plush-option-list', this.container);
-      this.inputContainer = $('.plush-input', this.container);
+      this.inputContainer = $('.plush-input-wrapper', this.container);
       this.placeholder = $('.plush-placeholder', this.inputContainer);
       this.input = $('input', this.inputContainer);
       this.options.multiple = (this.options.multiple != null) || (this.element.attr('multiple') != null);
