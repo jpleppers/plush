@@ -30,118 +30,6 @@
 
 }).call(this);
 (function() {
-  var template = Handlebars.template, templates = Handlebars.templates = Handlebars.templates || {};
-templates['plush_image_list_item'] = template(function (Handlebars,depth0,helpers,partials,data) {
-  this.compilerInfo = [4,'>= 1.0.0'];
-helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression;
-
-
-  buffer += "<li class='plush-list-item plush-imagebox' data-label='";
-  if (stack1 = helpers.label) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
-  else { stack1 = (depth0 && depth0.label); stack1 = typeof stack1 === functionType ? stack1.call(depth0, {hash:{},data:data}) : stack1; }
-  buffer += escapeExpression(stack1)
-    + "' data-value='";
-  if (stack1 = helpers.value) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
-  else { stack1 = (depth0 && depth0.value); stack1 = typeof stack1 === functionType ? stack1.call(depth0, {hash:{},data:data}) : stack1; }
-  buffer += escapeExpression(stack1)
-    + "'>\n  <a href='#'>\n    <img src='";
-  if (stack1 = helpers.image) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
-  else { stack1 = (depth0 && depth0.image); stack1 = typeof stack1 === functionType ? stack1.call(depth0, {hash:{},data:data}) : stack1; }
-  buffer += escapeExpression(stack1)
-    + "'>\n    <span class='title'>";
-  if (stack1 = helpers.label) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
-  else { stack1 = (depth0 && depth0.label); stack1 = typeof stack1 === functionType ? stack1.call(depth0, {hash:{},data:data}) : stack1; }
-  buffer += escapeExpression(stack1)
-    + "</span>\n    <span class='description'>";
-  if (stack1 = helpers.description) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
-  else { stack1 = (depth0 && depth0.description); stack1 = typeof stack1 === functionType ? stack1.call(depth0, {hash:{},data:data}) : stack1; }
-  buffer += escapeExpression(stack1)
-    + "</span>\n  </a>\n</li>\n";
-  return buffer;
-  });
-})();
-(function() {
-  var template = Handlebars.template, templates = Handlebars.templates = Handlebars.templates || {};
-templates['plush_input'] = template(function (Handlebars,depth0,helpers,partials,data) {
-  this.compilerInfo = [4,'>= 1.0.0'];
-helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression;
-
-
-  buffer += "<div class='plush-input-wrapper'>\n  <div class='plush-placeholder'>";
-  if (stack1 = helpers.placeholder) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
-  else { stack1 = (depth0 && depth0.placeholder); stack1 = typeof stack1 === functionType ? stack1.call(depth0, {hash:{},data:data}) : stack1; }
-  buffer += escapeExpression(stack1)
-    + "</div>\n  <input class='plush-input' type='text' value='";
-  if (stack1 = helpers.value) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
-  else { stack1 = (depth0 && depth0.value); stack1 = typeof stack1 === functionType ? stack1.call(depth0, {hash:{},data:data}) : stack1; }
-  buffer += escapeExpression(stack1)
-    + "'>\n  <div class='plush-caret'></div>\n</div>\n<ul class='plush-option-list'></ul>\n";
-  return buffer;
-  });
-})();
-(function() {
-  var template = Handlebars.template, templates = Handlebars.templates = Handlebars.templates || {};
-templates['plush_list_item'] = template(function (Handlebars,depth0,helpers,partials,data) {
-  this.compilerInfo = [4,'>= 1.0.0'];
-helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, functionType="function";
-
-
-  buffer += "<li class='plush-list-item' data-label='";
-  if (stack1 = helpers.label) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
-  else { stack1 = (depth0 && depth0.label); stack1 = typeof stack1 === functionType ? stack1.call(depth0, {hash:{},data:data}) : stack1; }
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "' data-value='";
-  if (stack1 = helpers.value) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
-  else { stack1 = (depth0 && depth0.value); stack1 = typeof stack1 === functionType ? stack1.call(depth0, {hash:{},data:data}) : stack1; }
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "'>\n  <a href='#'>";
-  if (stack1 = helpers.label) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
-  else { stack1 = (depth0 && depth0.label); stack1 = typeof stack1 === functionType ? stack1.call(depth0, {hash:{},data:data}) : stack1; }
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "</a>\n</li>\n";
-  return buffer;
-  });
-})();
-(function() {
-  var template = Handlebars.template, templates = Handlebars.templates = Handlebars.templates || {};
-templates['plush_multi_select_item'] = template(function (Handlebars,depth0,helpers,partials,data) {
-  this.compilerInfo = [4,'>= 1.0.0'];
-helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression;
-
-
-  buffer += "<div class='plush-multi-select-item' data-value='";
-  if (stack1 = helpers.value) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
-  else { stack1 = (depth0 && depth0.value); stack1 = typeof stack1 === functionType ? stack1.call(depth0, {hash:{},data:data}) : stack1; }
-  buffer += escapeExpression(stack1)
-    + "'>\n  <span>";
-  if (stack1 = helpers.label) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
-  else { stack1 = (depth0 && depth0.label); stack1 = typeof stack1 === functionType ? stack1.call(depth0, {hash:{},data:data}) : stack1; }
-  buffer += escapeExpression(stack1)
-    + "</span>\n  <a class='plush-remove'></a>\n</div>\n";
-  return buffer;
-  });
-})();
-(function() {
-  var template = Handlebars.template, templates = Handlebars.templates = Handlebars.templates || {};
-templates['plush_optgroup_item'] = template(function (Handlebars,depth0,helpers,partials,data) {
-  this.compilerInfo = [4,'>= 1.0.0'];
-helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, functionType="function";
-
-
-  buffer += "<li class='plush-optgroup'>\n  <div class='plush-optgroup-label'>";
-  if (stack1 = helpers.label) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
-  else { stack1 = (depth0 && depth0.label); stack1 = typeof stack1 === functionType ? stack1.call(depth0, {hash:{},data:data}) : stack1; }
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "</div>\n  <ul class='plush-optgroup-list'></ul>\n</li>\n";
-  return buffer;
-  });
-})();
-(function() {
   this.Plush = (function() {
     function Plush(element, options) {
       var $option, defaults, key, option, selectedOptions, value, _i, _len,
@@ -255,19 +143,21 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         event.preventDefault();
         event.stopPropagation();
         return _this.handleListKeyPress(event);
+      }).on('blur', 'a', function(event) {
+        return $(this).removeClass('focused');
       });
       this.element.trigger('initialized');
       return this;
     }
 
     Plush.prototype.handleInputKeyPress = function(event) {
-      if (event.keyCode === 38 || event.keyCode === 40) {
+      if (event.which === 38 || event.which === 40) {
         event.preventDefault();
-        if (event.keyCode === 38) {
-          $('li:not(.hidden):last a', this.list).focus();
+        if (event.which === 38) {
+          this.focusAnchor($('li:not(.hidden):last a', this.list));
         }
-        if (event.keyCode === 40) {
-          return $('li:not(.hidden):first a', this.list).focus();
+        if (event.which === 40) {
+          return this.focusAnchor($('li:not(.hidden):first a', this.list));
         }
       } else {
         if (this.searchWithAjax) {
@@ -281,30 +171,30 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     Plush.prototype.handleListKeyPress = function(event) {
       var $anchor, $item, $link;
       $anchor = $(event.currentTarget);
-      if (event.keyCode === 38 || event.keyCode === 40) {
-        if (event.keyCode === 38) {
+      if (event.which === 38 || event.which === 40) {
+        if (event.which === 38) {
           $link = this.prevAnchor($anchor);
         }
-        if (event.keyCode === 40) {
+        if (event.which === 40) {
           $link = this.nextAnchor($anchor);
         }
         if (!$link.length > 0) {
           this.input.focus();
         } else {
-          $link.focus();
+          this.focusAnchor($link);
         }
       }
-      if (event.keyCode === 27) {
+      if (event.which === 27) {
         this.input.focus();
       }
-      if (event.keyCode === 13) {
+      if (event.which === 13) {
         $anchor = $(event.currentTarget);
         $item = $anchor.parents('li').first();
-        if (this.options.multiple != null) {
+        if ((this.options.multiple != null) && this.options.multiple) {
           return this.addOptionFor($item);
         } else {
           this.setOptionFor($item);
-          return $anchor.blur();
+          return this.blurAnchor($anchor);
         }
       }
     };
@@ -358,6 +248,16 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         $("option[value=" + value + "]", this.element).remove();
       }
       return this.element.trigger('change');
+    };
+
+    Plush.prototype.focusAnchor = function(anchor) {
+      anchor.focus();
+      return anchor.addClass('focused');
+    };
+
+    Plush.prototype.blurAnchor = function(anchor) {
+      anchor.blur();
+      return anchor.removeClass('focused');
     };
 
     Plush.prototype.nextAnchor = function(anchor) {
@@ -618,6 +518,118 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   });
 
 }).call(this);
+(function() {
+  var template = Handlebars.template, templates = Handlebars.templates = Handlebars.templates || {};
+templates['plush_image_list_item'] = template(function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression;
+
+
+  buffer += "<li class='plush-list-item plush-imagebox' data-label='";
+  if (stack1 = helpers.label) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = (depth0 && depth0.label); stack1 = typeof stack1 === functionType ? stack1.call(depth0, {hash:{},data:data}) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "' data-value='";
+  if (stack1 = helpers.value) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = (depth0 && depth0.value); stack1 = typeof stack1 === functionType ? stack1.call(depth0, {hash:{},data:data}) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "'>\n  <a href='#'>\n    <img src='";
+  if (stack1 = helpers.image) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = (depth0 && depth0.image); stack1 = typeof stack1 === functionType ? stack1.call(depth0, {hash:{},data:data}) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "'>\n    <span class='title'>";
+  if (stack1 = helpers.label) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = (depth0 && depth0.label); stack1 = typeof stack1 === functionType ? stack1.call(depth0, {hash:{},data:data}) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "</span>\n    <span class='description'>";
+  if (stack1 = helpers.description) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = (depth0 && depth0.description); stack1 = typeof stack1 === functionType ? stack1.call(depth0, {hash:{},data:data}) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "</span>\n  </a>\n</li>\n";
+  return buffer;
+  });
+})();
+(function() {
+  var template = Handlebars.template, templates = Handlebars.templates = Handlebars.templates || {};
+templates['plush_input'] = template(function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression;
+
+
+  buffer += "<div class='plush-input-wrapper'>\n  <div class='plush-placeholder'>";
+  if (stack1 = helpers.placeholder) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = (depth0 && depth0.placeholder); stack1 = typeof stack1 === functionType ? stack1.call(depth0, {hash:{},data:data}) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "</div>\n  <input class='plush-input' type='text' value='";
+  if (stack1 = helpers.value) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = (depth0 && depth0.value); stack1 = typeof stack1 === functionType ? stack1.call(depth0, {hash:{},data:data}) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "'>\n  <div class='plush-caret'></div>\n</div>\n<ul class='plush-option-list'></ul>\n";
+  return buffer;
+  });
+})();
+(function() {
+  var template = Handlebars.template, templates = Handlebars.templates = Handlebars.templates || {};
+templates['plush_list_item'] = template(function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", stack1, functionType="function";
+
+
+  buffer += "<li class='plush-list-item' data-label='";
+  if (stack1 = helpers.label) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = (depth0 && depth0.label); stack1 = typeof stack1 === functionType ? stack1.call(depth0, {hash:{},data:data}) : stack1; }
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "' data-value='";
+  if (stack1 = helpers.value) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = (depth0 && depth0.value); stack1 = typeof stack1 === functionType ? stack1.call(depth0, {hash:{},data:data}) : stack1; }
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "'>\n  <a href='#'>";
+  if (stack1 = helpers.label) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = (depth0 && depth0.label); stack1 = typeof stack1 === functionType ? stack1.call(depth0, {hash:{},data:data}) : stack1; }
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "</a>\n</li>\n";
+  return buffer;
+  });
+})();
+(function() {
+  var template = Handlebars.template, templates = Handlebars.templates = Handlebars.templates || {};
+templates['plush_multi_select_item'] = template(function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression;
+
+
+  buffer += "<div class='plush-multi-select-item' data-value='";
+  if (stack1 = helpers.value) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = (depth0 && depth0.value); stack1 = typeof stack1 === functionType ? stack1.call(depth0, {hash:{},data:data}) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "'>\n  <span>";
+  if (stack1 = helpers.label) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = (depth0 && depth0.label); stack1 = typeof stack1 === functionType ? stack1.call(depth0, {hash:{},data:data}) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "</span>\n  <a class='plush-remove'></a>\n</div>\n";
+  return buffer;
+  });
+})();
+(function() {
+  var template = Handlebars.template, templates = Handlebars.templates = Handlebars.templates || {};
+templates['plush_optgroup_item'] = template(function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", stack1, functionType="function";
+
+
+  buffer += "<li class='plush-optgroup'>\n  <div class='plush-optgroup-label'>";
+  if (stack1 = helpers.label) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = (depth0 && depth0.label); stack1 = typeof stack1 === functionType ? stack1.call(depth0, {hash:{},data:data}) : stack1; }
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "</div>\n  <ul class='plush-optgroup-list'></ul>\n</li>\n";
+  return buffer;
+  });
+})();
 (function() {
 
 

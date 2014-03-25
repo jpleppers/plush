@@ -71,7 +71,6 @@ describe 'Plush', ->
         @plush.search 'black'
         $('li:not(.hidden)', @plush.list).length.should.equal 1
 
-
     describe '#setOptionFor', ->
       it 'should set correct value', ->
         @plush.setOptionFor $('li[data-value="6"]', @plush.list)
@@ -79,6 +78,11 @@ describe 'Plush', ->
 
       it 'should set correct value on click', ->
         $('.plush-option-list li[data-value="4"] a',  @plush.container).trigger 'mousedown'
+        @select.val().should.equal '4'
+        @select.serialize().should.equal 'test_model=4'
+
+      it 'should set correct value on enter', ->
+        $('.plush-option-list li[data-value="4"] a',  @plush.container).trigger window.testEvents.keyEnter
         @select.val().should.equal '4'
         @select.serialize().should.equal 'test_model=4'
 
@@ -97,6 +101,11 @@ describe 'Plush', ->
         anchor = $('li:first-child a', @plush.list)
         @plush.prevAnchor(anchor).length.should.equal 0
 
+      it 'should select next anchor on down arrow button press', ->
+        anchor = $('li:first-child a', @plush.list)
+        anchor.trigger window.testEvents.keyArrowDown
+        $('a.focused', @plush.list).html().should.equal 'AntiqueWhite'
+
     describe '#prevAnchor', ->
       it 'should select previous anchor', ->
         anchor = $('li:last-child a', @plush.list)
@@ -111,6 +120,12 @@ describe 'Plush', ->
         @plush.search 'azure'
         anchor = $('li:first-child a', @plush.list)
         @plush.prevAnchor(anchor).length.should.equal 0
+
+      it 'should select previous anchor on up arrow button press', ->
+        anchor = $('li:last-child a', @plush.list)
+        anchor.trigger window.testEvents.keyArrowUp
+        $('a.focused', @plush.list).html().should.equal 'BlanchedAlmond'
+
 
     describe '#checkResults', ->
       it 'should show no results message', ->

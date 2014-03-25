@@ -48,6 +48,7 @@ window.testItems = new Items([
 ])
 
 window.testEvents =
-  keyArrowDown: $.Event( "keyup", { keyCode: 38 } )
-  keyArrowUp:   $.Event( "keyup", { keyCode: 40 } )
-  keyEscape:    $.Event( "keyup", { keyCode: 27 } )
+  keyArrowUp:   $.Event( "keyup", { which: 38 } )
+  keyArrowDown: $.Event( "keyup", { which: 40 } )
+  keyEscape:    $.Event( "keyup", { which: 27 } )
+  keyEnter:     $.Event( "keyup", { which: 13 } )
