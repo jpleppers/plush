@@ -67,6 +67,8 @@ class @Plush
     @inputContainer.on 'click', '.plush-placeholder, .plush-caret', (event) =>
       event.preventDefault()
       @show()
+    .on 'click', (event) =>
+      @show() if @options.multiple
     .on 'click', '.plush-remove', (event) =>
       event.preventDefault()
       optionContainer = $(event.currentTarget).parents('.plush-multi-select-item').first()
