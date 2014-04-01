@@ -1,6 +1,6 @@
 #= require jquery
 #= require jquery_ujs
-#= require jquery.ui.droppable
+#= require jquery-ui-1.10.4.custom
 #= require handlebars-v1.1.2
 #= require sinon-1.7.3
 #= require plush
@@ -48,7 +48,18 @@ window.testItems = new Items([
 ])
 
 window.testEvents =
-  keyArrowUp:   $.Event( "keyup", { which: 38 } )
-  keyArrowDown: $.Event( "keyup", { which: 40 } )
-  keyEscape:    $.Event( "keyup", { which: 27 } )
-  keyEnter:     $.Event( "keyup", { which: 13 } )
+  keyArrowUp:   $.Event("keyup", { which: 38 })
+  keyArrowDown: $.Event("keyup", { which: 40 })
+  keyEscape:    $.Event("keyup", { which: 27 })
+  keyEnter:     $.Event("keyup", { which: 13 })
+
+class @mockMultiSelectItem
+  constructor: (item, previousItem) ->
+    @item = $(item)
+    @previousItem = $(previousItem)
+
+  prev: () ->
+    @previousItem
+
+  data: (attribute, value) ->
+    if value then @item.data(attribute, value) else @item.data(attribute)

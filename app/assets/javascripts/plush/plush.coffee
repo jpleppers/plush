@@ -11,6 +11,7 @@ class @Plush
     @placeholder = $('.plush-placeholder', @inputContainer)
     @input = $('input', @inputContainer)
     @options.multiple = @options.multiple? || @element.attr('multiple')?
+    @options.dragDrop = @options.drag_drop? || @element.data('drag-drop')?
     @searchWithAjax = @element.data('query')?
 
     # Option setting
@@ -64,11 +65,18 @@ class @Plush
       else
         @setOptionFor $('li:first-child', @list)
 
+    # Drag drop functionality
+    if @options.dragDrop
+      @inputContainer.sortable
+        items: '> .plush-multi-select-item'
+        stop: (event, ui) =>
+          @moveMultiSelectItem(ui.item)
+
     @inputContainer.on 'click', '.plush-placeholder, .plush-caret', (event) =>
       event.preventDefault()
       @show()
     .on 'click', (event) =>
-      @show() if @options.multiple
+      @show() if @options.multiple && $(event.target).hasClass 'plush-input-wrapper'
     .on 'click', '.plush-remove', (event) =>
       event.preventDefault()
       optionContainer = $(event.currentTarget).parents('.plush-multi-select-item').first()
@@ -171,6 +179,19 @@ class @Plush
 
       @element.append "<option value=#{value} selected>#{label}</option>"
       @element.trigger 'change'
+
+  # Move item based on previous item, which is altered by jquery sortable
+  moveMultiSelectItem: (item) ->
+    $option = $("[value=#{item.data('value')}]", @element)
+
+    if item.prev().length > 0
+      $prevItem = item.prev()
+      $prevOption = $("[value=#{$prevItem.data('value')}]", @element)
+      $($prevOption, @element).after($option)
+    else
+      @element.prepend($option)
+
+    @element.trigger 'change'
 
   removeOption: (value) ->
     $("option[value=#{value}]", @element).removeAttr('selected')

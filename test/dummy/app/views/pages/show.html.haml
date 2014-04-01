@@ -89,3 +89,9 @@
   .column
     %pre
 
+.columns
+  .column
+    %h3 Select tag with drag & drop
+    = select_tag 'color', options_from_collection_for_select(@tags, 'id', 'name', [3, 5, 9]), multiple: 'multiple', data: {toggle: 'plush', position: 'top', drag_drop: true}
+  .column
+    %pre
