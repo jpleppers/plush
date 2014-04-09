@@ -1,7 +1,7 @@
 .plush-container.plush-multiple
   .plush-input-wrapper
     .plush-multi-select-item
-      padding: 3px 5px
+      padding: $plushTopMargin $plushLeftMargin
       background-color: $blue
       border-color: $ligthBlue
       color: white
@@ -17,4 +17,13 @@
     background-image: url('plush/cross-white.png')
     background-position: bottom center
     background-repeat: no-repeat
+    margin-top: -1px
 
+  .plush-drag-placeholder
+    background-color: $blue
+    border-color: $ligthBlue
+    opacity: 0.4
+    float: left
+    margin: $plushTopMargin
+    padding: ($plushTopMargin + 1px) $plushLeftMargin
+    +border-radius(5px)

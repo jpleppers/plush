@@ -1,13 +1,15 @@
 .plush-input-wrapper
   margin: 0
-  padding: 4px 30px 4px 4px
+  padding: $plushInputPadding
+  padding-right: 30px
+  min-height: $plushLineHeight
 
   input, .plush-placeholder
-    padding: 2px 5px
+    padding: $plushTopMargin $plushLeftMargin
     margin: 0
     outline: none
-    line-height: 22px
-    height: 22px
+    line-height: $plushLineHeight
+    height: $plushLineHeight
 
   input
     display: none

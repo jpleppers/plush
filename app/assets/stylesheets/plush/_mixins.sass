@@ -36,24 +36,6 @@
   -moz-box-sizing: $boxmodel
   box-sizing: $boxmodel
 
-=keyframes($name)
-  @-webkit-keyframes #{$name}
-    @content
-  @-moz-keyframes #{$name}
-    @content
-  @-ms-keyframes #{$name}
-    @content
-  @keyframes #{$name}
-    @content
-
-// Loading stripes keyframe definition
-+keyframes(stripe-loading)
-  from
-    background-position: 0px center
-
-  to
-    background-position: 40px center
-
 @mixin animate($options)
   animation: $options
   -moz-animation: $options

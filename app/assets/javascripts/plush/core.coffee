@@ -1,0 +1,208 @@
+class @Plush
+  defaults:
+    labelMethod:          'label'
+    listItemTemplate:     'plush_list_item'
+    optgroupTemplate:     'plush_optgroup_item'
+    multiSelectTemplate:  'plush_multi_select_item'
+    noResultsTemplate:    'plush_no_results'
+    noResultsMessage:     'No results were found for: '
+    position:             'bottom'
+    url:                  null
+    preload:              false
+    queryDefault:         'q'
+
+  constructor: (@element, @options={}) ->
+    # Hide original and wrap with container
+    @element.hide()
+    @element.wrap '<div class="plush-container"></div>'
+    @container = @element.parent()
+    @container.append $.handlebar('plush_input', {placeholder: @element.attr('placeholder')})
+
+    @list =           $('.plush-option-list', @container)
+    @inputContainer = $('.plush-input-wrapper', @container)
+    @placeholder =    $('.plush-placeholder', @inputContainer)
+    @input =          $('input', @inputContainer)
+
+    # Option setting
+    @queryData = @getQueryDataFromElement(@element.get(0))
+    @queryData = {} unless @queryData?
+    @searchWithAjax = @element.data('query')?
+
+    for key, value of @defaults
+      @setDefaultOption key, value
+
+    @addClassnames()
+    @setPlaceholders()
+    @element.attr 'tabindex', -1
+
+    # See if is <option> based or needs to get some JSON data
+    if @options.url?
+      if !@searchWithAjax || (@searchWithAjax && @options.preload)
+        @createListFromSource(true)
+      else
+        @checkResults()
+    else
+      if $('optgroup', @element).length > 0
+        @createListFromGroupedOptions()
+      else
+        @createListFromOptions()
+
+    @setup()
+    @setEventHandlers()
+    return @
+
+  setPlaceholders: ->
+    if $('option[selected]', @element).length > 0
+      @placeholder.html $('option[selected]', @element).html()
+      @input.val $('option[selected]', @element).html()
+
+  setup: ->
+    if @element.attr('placeholder')?
+      @element.prop('selectedIndex', -1)
+    else
+      @setOptionFor $('li:first-child', @list)
+
+  addClassnames: ->
+    @list.addClass @options.listItemTemplate.replace(/\_/g, '-')
+    @container.addClass "position-#{@options.position}"
+
+  setDefaultOption: (key, value) ->
+    unless @options[key]?
+      dataAttrName = key.replace /([A-Z])/g, ($1) -> "-" + $1.toLowerCase()
+      @options[key] = @element.data(dataAttrName) || value
+
+  setOptionFor: (listItem) ->
+    @placeholder.html listItem.data('label')
+    if @searchWithAjax
+      @createOption listItem.data('label'), listItem.data('value')
+    else
+      @element.val listItem.data('value')
+
+    @hide(true)
+    @element.trigger 'change'
+
+  createOption: (label, value, selected = true) ->
+    unless @getOption(value).length > 0
+      @element.append "<option value=#{value}#{ if selected then ' selected' else ''}>#{label}</option>"
+      @element.trigger 'change'
+
+  removeOption: (value) ->
+    $("option[value=#{value}]", @element).removeAttr('selected')
+    if @options.multiple
+      $("option[value=#{value}]", @element).remove()
+
+  getOption: (value) ->
+    $option = $("[value=#{value}]", @element)
+
+  focusAnchor: (anchor) ->
+    anchor.focus()
+    anchor.addClass 'focused'
+
+  blurAnchor: (anchor) ->
+    anchor.blur()
+    anchor.removeClass 'focused'
+
+  nextAnchor: (anchor) ->
+    $li = anchor.parents('li').first()
+    next = $('a', $li.next())
+    if next && !next.parents('li').first().hasClass('hidden') then next else @nextAnchor(next)
+
+  prevAnchor: (anchor) ->
+    $li = anchor.parents('li').first()
+    prev = $('a', $li.prev())
+    if prev && !prev.parents('li').first().hasClass('hidden') then prev else @prevAnchor(prev)
+
+  hasFocus: () ->
+    $('*:focus', @container).length > 0
+
+  checkItemLabel: (item) ->
+    item['label'] = item[@options.labelMethod] unless item['label']?
+
+  createListItemFromJson: (item) ->
+    $.handlebar(@options.listItemTemplate, item)
+
+  # --------------------------------------
+  # Search methods
+  # --------------------------------------
+
+  delayedSearch: ->
+    clearTimeout(@timer) if @timer?
+    @timer = setTimeout @bind(@createListFromSource), 500
+
+  search: (query) ->
+    matcher = new RegExp(query, 'i')
+    $('.plush-list-item a', @container).each ->
+      $listElement = $(this).parents('.plush-list-item').first()
+
+      if matcher.test($(this).html())
+        $listElement.removeClass('hidden') unless $listElement.hasClass('disabled')
+      else
+        $listElement.addClass('hidden')
+
+    $('.plush-optgroup', @container).each ->
+      $element = $(this)
+      if $('.plush-list-item:not(.hidden)', $element).length == 0
+        $element.hide()
+      else
+        $element.show()
+
+    @resizeList()
+    @checkResults()
+
+  checkResults: ->
+    if $('li:not(.hidden)', @list).length == 0
+      @showNoResults()
+    else
+      @hideNoResults()
+
+  # No results message
+  showNoResults: ->
+    msg = @options.noResultsMessage + @input.val()
+
+    if $('.plush-no-results', @list).length == 0
+      @list.append $.handlebar(@options.noResultsTemplate, {message: msg})
+    else
+      $('.plush-no-results', @list).html(msg)
+      $('.plush-no-results', @list).show()
+
+  hideNoResults: ->
+    $('.plush-no-results', @list).hide()
+
+  resizeList: ->
+    if @options.position == 'top'
+      @list.css 'top', "-#{@list.outerHeight(true)}px"
+
+  # Input togglers for autocompletion behaviour
+  show: ->
+    @placeholder.hide()
+    @input.css 'display', 'block'
+    @inputContainer.addClass 'opened'
+    @list.show()
+    @input.focus() unless @input.is(":focus")
+
+  hide: (force = false) ->
+    if !@hasFocus() || force
+      @showPlaceholder()
+      @inputContainer.removeClass 'opened'
+      @input.hide()
+      @list.hide()
+
+  showPlaceholder: () ->
+    @placeholder.show()
+
+  getAttributesFromElement: (element, attr_regexp) ->
+    options = {}
+    for attr in element.attributes
+      options[attr.nodeName.replace(attr_regexp, '')]= attr.nodeValue if attr.nodeName.match(attr_regexp)
+    options
+
+  getDataFromElement: (element) ->
+    @getAttributesFromElement element, /^data-/
+
+  getQueryDataFromElement: (element) ->
+    @getAttributesFromElement element, /^data-query-/
+
+  bind: ( method ) ->
+    () =>
+      method.apply( @, arguments )
+

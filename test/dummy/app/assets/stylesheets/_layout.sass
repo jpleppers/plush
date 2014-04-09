@@ -13,6 +13,7 @@ html, body
   width: 900px
   background-color: white
   padding: 20px
+  padding-bottom: 300px
   min-height: 600px
   +box-shadow(0 0 75px rgba(white, 0.3))
   +clearfix
@@ -51,3 +52,29 @@ pre
   font-size: 13px
   word-break: break-word
   +border-radius(5px)
+
+
+=keyframes($name)
+  @-webkit-keyframes #{$name}
+    @content
+  @-moz-keyframes #{$name}
+    @content
+  @-ms-keyframes #{$name}
+    @content
+  @keyframes #{$name}
+    @content
+
+// Loading stripes keyframe definition
++keyframes(stripe-loading)
+  from
+    background-position: 0px center
+
+  to
+    background-position: 40px center
+
+.plush-input.loading
+  background-position: 0px center
+  background-image: image_url('plush/stripe.png')
+  +animate(stripe-loading 1s infinite linear)
+
+

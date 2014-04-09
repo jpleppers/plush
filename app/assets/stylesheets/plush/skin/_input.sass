@@ -3,12 +3,9 @@
   background-color: white
   +border-radius($borderRadius)
 
-  &.loading
-    background-position: 0px center
-    +animate(stripe-loading 1s infinite linear)
-
   &.opened
     border-bottom-width: 0
+    padding-bottom: $plushInputPadding + 1px
     +border-bottom-radius(0)
 
   input
