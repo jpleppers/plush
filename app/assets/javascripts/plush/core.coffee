@@ -35,17 +35,16 @@ class @Plush
     @setPlaceholders()
     @element.attr 'tabindex', -1
 
-    # See if is <option> based or needs to get some JSON data
+    # Fill list
     if @options.url?
       if !@searchWithAjax || (@searchWithAjax && @options.preload)
         @createListFromSource(true)
-      else
-        @checkResults()
     else
       if $('optgroup', @element).length > 0
         @createListFromGroupedOptions()
       else
         @createListFromOptions()
+    @checkResults()
 
     @setup()
     @setEventHandlers()
@@ -74,6 +73,7 @@ class @Plush
   setOptionFor: (listItem) ->
     @placeholder.html listItem.data('label')
     if @searchWithAjax
+      @element.empty()
       @createOption listItem.data('label'), listItem.data('value')
     else
       @element.val listItem.data('value')
@@ -87,12 +87,11 @@ class @Plush
       @element.trigger 'change'
 
   removeOption: (value) ->
-    $("option[value=#{value}]", @element).removeAttr('selected')
-    if @options.multiple
-      $("option[value=#{value}]", @element).remove()
+    $("option[value=#{value}]", @element).remove()
+    @element.trigger 'change'
 
-  getOption: (value) ->
-    $option = $("[value=#{value}]", @element)
+  getOption: (value, withSelected = false) ->
+    $option = $("[value=#{value}]#{if withSelected then '[selected=selected]' else ''}", @element)
 
   focusAnchor: (anchor) ->
     anchor.focus()

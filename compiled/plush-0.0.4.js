@@ -74,8 +74,6 @@
       if (this.options.url != null) {
         if (!this.searchWithAjax || (this.searchWithAjax && this.options.preload)) {
           this.createListFromSource(true);
-        } else {
-          this.checkResults();
         }
       } else {
         if ($('optgroup', this.element).length > 0) {
@@ -84,6 +82,7 @@
           this.createListFromOptions();
         }
       }
+      this.checkResults();
       this.setup();
       this.setEventHandlers();
       return this;
@@ -122,6 +121,7 @@
     Plush.prototype.setOptionFor = function(listItem) {
       this.placeholder.html(listItem.data('label'));
       if (this.searchWithAjax) {
+        this.element.empty();
         this.createOption(listItem.data('label'), listItem.data('value'));
       } else {
         this.element.val(listItem.data('value'));
@@ -141,15 +141,16 @@
     };
 
     Plush.prototype.removeOption = function(value) {
-      $("option[value=" + value + "]", this.element).removeAttr('selected');
-      if (this.options.multiple) {
-        return $("option[value=" + value + "]", this.element).remove();
-      }
+      $("option[value=" + value + "]", this.element).remove();
+      return this.element.trigger('change');
     };
 
-    Plush.prototype.getOption = function(value) {
+    Plush.prototype.getOption = function(value, withSelected) {
       var $option;
-      return $option = $("[value=" + value + "]", this.element);
+      if (withSelected == null) {
+        withSelected = false;
+      }
+      return $option = $("[value=" + value + "]" + (withSelected ? '[selected=selected]' : ''), this.element);
     };
 
     Plush.prototype.focusAnchor = function(anchor) {
@@ -475,7 +476,6 @@
           item = result[_i];
           this.checkItemLabel(item);
           this.list.append(this.createListItemFromJson(item));
-          this.element.append("<option value=" + item.value + ">" + item.label + "</option>");
         }
       } else {
         for (_j = 0, _len1 = result.length; _j < _len1; _j++) {
@@ -561,8 +561,11 @@
       var value;
       value = listItem.data('value');
       if (!(this.getOption(value).length > 0)) {
-        return this.addMultiSelectItem(listItem.data('label'), value);
+        this.addMultiSelectItem(listItem.data('label'), value);
+      } else {
+        this.getOption(value).attr('selected', 'selected');
       }
+      return listItem.addClass('hidden');
     };
 
     PlushMulti.prototype.addMultiSelectItem = function(label, value) {
@@ -578,6 +581,19 @@
       }
       this.createOption(label, value);
       return this.element.trigger('change');
+    };
+
+    PlushMulti.prototype.checkResults = function() {
+      var $listItem, listItem, _i, _len, _ref;
+      _ref = $('li', this.list);
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        listItem = _ref[_i];
+        $listItem = $(listItem);
+        if (this.getOption($listItem.data('value'), true).length > 0) {
+          $listItem.addClass('hidden');
+        }
+      }
+      return PlushMulti.__super__.checkResults.call(this);
     };
 
     PlushMulti.prototype.moveMultiSelectItem = function(item) {

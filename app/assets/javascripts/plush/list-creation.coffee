@@ -55,7 +55,7 @@ Plush::createListFromJSON = (result = [], initial = false) ->
       for item in result
         @checkItemLabel(item)
         @list.append @createListItemFromJson(item)
-        @element.append "<option value=#{item.value}>#{item.label}</option>"
+        # @element.append "<option value=#{item.value}>#{item.label}</option>"
     else
       for groupObject in result
         groupName = Object.keys(groupObject)[0]

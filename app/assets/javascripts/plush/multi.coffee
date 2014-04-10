@@ -38,6 +38,11 @@ class @PlushMulti extends Plush
     value = listItem.data('value')
     unless @getOption(value).length > 0
       @addMultiSelectItem listItem.data('label'), value
+    else
+      @getOption(value).attr('selected', 'selected')
+
+    listItem.addClass 'hidden'
+
 
   addMultiSelectItem: (label, value) ->
     $item = $.handlebar @options.multiSelectTemplate, {label: label, value: value}
@@ -49,6 +54,11 @@ class @PlushMulti extends Plush
     @createOption label, value
     @element.trigger 'change'
 
+  checkResults: () ->
+    for listItem in $('li', @list)
+      $listItem = $(listItem)
+      $listItem.addClass('hidden') if @getOption($listItem.data('value'), true).length > 0
+    super()
 
   # Move item based on previous item, which is altered by jquery sortable
   moveMultiSelectItem: (item) ->
