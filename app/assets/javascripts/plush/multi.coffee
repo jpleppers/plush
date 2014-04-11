@@ -79,7 +79,16 @@ class @PlushMulti extends Plush
       @removeOption optionContainer.data('value')
       optionContainer.remove()
       @showPlaceholder()
+      @checkResults()
     .on 'click', (event) =>
       @show() if $(event.target).hasClass 'plush-input-wrapper'
 
     super()
+
+  handleEnterOnListAnchor: (anchor) ->
+    $item = anchor.parents('li').first()
+    @setOptionFor $item
+    @blurAnchor anchor
+
+    nextAnchor = @nextOrPreviousAnchor(anchor)
+    @focusAnchor(nextAnchor) if nextAnchor?

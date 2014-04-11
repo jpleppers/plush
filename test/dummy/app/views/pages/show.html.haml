@@ -109,3 +109,10 @@
     = select_tag 'color', nil, multiple: 'multiple', data: {toggle: 'plush', url: search_tags_path, query: ''}, placeholder: "Choose you're favorite color ..."
   .column
     %pre
+
+.columns
+  .column
+    %h3 Select tag with query and drag & drop
+    = select_tag 'color', nil, multiple: 'multiple', data: {toggle: 'plush', url: search_tags_path, query: '', drag_drop: true}, placeholder: "Choose you're favorite color ..."
+  .column
+    %pre

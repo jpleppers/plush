@@ -106,6 +106,17 @@ describe 'Plush', ->
         anchor.trigger window.testEvents.keyArrowDown
         $('a.focused', @plush.list).html().should.equal 'AntiqueWhite'
 
+      it 'should select correct next or previous anchor', ->
+        anchor = $('li:first-child a', @plush.list)
+        @plush.nextOrPreviousAnchor(anchor).html().should.equal 'AntiqueWhite'
+
+        anchor = $($('li a', @plush.list)[1])
+        @plush.nextOrPreviousAnchor(anchor).html().should.equal 'Aqua'
+
+        anchor = $('li:last-child a', @plush.list)
+        @plush.nextOrPreviousAnchor(anchor).html().should.equal 'BlanchedAlmond'
+
+
     describe '#prevAnchor', ->
       it 'should select previous anchor', ->
         anchor = $('li:last-child a', @plush.list)

@@ -111,6 +111,12 @@ class @Plush
     prev = $('a', $li.prev())
     if prev && !prev.parents('li').first().hasClass('hidden') then prev else @prevAnchor(prev)
 
+  nextOrPreviousAnchor: (anchor) ->
+    if @nextAnchor(anchor).length > 0
+      @nextAnchor(anchor)
+    else if @prevAnchor(anchor).length > 0
+      @prevAnchor(anchor)
+
   hasFocus: () ->
     $('*:focus', @container).length > 0
 

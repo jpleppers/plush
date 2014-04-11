@@ -3,7 +3,7 @@
     .plush-multi-select-item
       padding: $plushTopMargin $plushLeftMargin
       background-color: $blue
-      border-color: $ligthBlue
+      border-color: $listBorder
       color: white
       text-shadow: 0 1px 1px rgba(black, 0.25)
       +border-radius(5px)
@@ -21,9 +21,18 @@
 
   .plush-drag-placeholder
     background-color: $blue
-    border-color: $ligthBlue
+    border-color: $listBorder
     opacity: 0.4
     float: left
     margin: $plushTopMargin
     padding: ($plushTopMargin + 1px) $plushLeftMargin
     +border-radius(5px)
+
+  .plush-option-list
+    li.plush-list-item
+      background-color: $white
+      border-bottom: 1px solid $lighterGray
+
+      &:hover
+        background-color: $listHover
+        border-bottom-color: $listBorder

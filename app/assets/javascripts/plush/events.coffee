@@ -57,7 +57,9 @@ Plush::handleListKeyPress= (event) ->
 
   # Enter key
   if event.which == 13
-    $anchor = $(event.currentTarget)
-    $item = $anchor.parents('li').first()
-    @setOptionFor $item
-    @blurAnchor $anchor
+    @handleEnterOnListAnchor $(event.currentTarget)
+
+Plush::handleEnterOnListAnchor = (anchor) ->
+  $item = anchor.parents('li').first()
+  @setOptionFor $item
+  @blurAnchor anchor
