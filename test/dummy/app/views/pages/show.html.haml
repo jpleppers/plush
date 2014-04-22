@@ -27,8 +27,22 @@
 
 .columns
   .column
+    %h3 Select tag with source and value
+    = select_tag 'color', "<option value='3' selected=''>Aqua</option>".html_safe, placeholder: "Choose you're favorite color ...", data: {toggle: 'plush', label: 'name', url: tags_path}
+  .column
+    %pre
+
+.columns
+  .column
     %h3 Select tag with source and query
     = select_tag 'color', nil, placeholder: "Choose you're favorite color ...", data: {toggle: 'plush', label: 'name', url: search_tags_path, query: ''}
+  .column
+    %pre
+
+.columns
+  .column
+    %h3 Select tag with source and query and value
+    = select_tag 'color', "<option value='3' selected=''>Aqua</option>".html_safe, placeholder: "Choose you're favorite color ...", data: {toggle: 'plush', label: 'name', url: search_tags_path, query: ''}
   .column
     %pre
 

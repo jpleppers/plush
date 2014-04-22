@@ -64,6 +64,12 @@ describe 'Plush', ->
         @requests[0].method.should.equal 'GET'
         @requests = []
 
+      it 'should set initial value if present', ->
+        @select = $.renderTemplate 'select_tag_with_single_value'
+        @select.data 'url', 'http://localhost:3000/tags'
+        @select.plush()
+        @select.val().should.equal '9'
+
     describe '#search', ->
       it 'should match items based on a query', ->
         @plush.search 'bl'

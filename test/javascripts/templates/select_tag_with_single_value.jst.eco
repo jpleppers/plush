@@ -1,0 +1,3 @@
+<select data-toggle="plush" id="test_model" name="test_model" placeholder="Choose you're favorite color ...", data-query-foo='bar', data-query-baz='qux'>
+  <option value="9" selected>BlanchedAlmond</option>
+</select>

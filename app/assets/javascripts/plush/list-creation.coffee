@@ -55,7 +55,6 @@ Plush::createListFromJSON = (result = [], initial = false) ->
       for item in result
         @checkItemLabel(item)
         @list.append @createListItemFromJson(item)
-        # @element.append "<option value=#{item.value}>#{item.label}</option>"
     else
       for groupObject in result
         groupName = Object.keys(groupObject)[0]
@@ -67,5 +66,17 @@ Plush::createListFromJSON = (result = [], initial = false) ->
 
         @list.append $group
 
+
+    @checkInitialOption()
     @input.focus() unless initial
     @checkResults()
+
+Plush::checkInitialOption = ->
+  if @initialOption.length > 0
+    @setOption @initialOption.html(), @initialOption.val()
+
+Plush::createListItemFromJson = (item) ->
+  $.handlebar(@options.listItemTemplate, item)
+
+Plush::checkItemLabel = (item) ->
+  item['label'] = item[@options.labelMethod] unless item['label']?

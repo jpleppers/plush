@@ -22,6 +22,7 @@ class @Plush
     @inputContainer = $('.plush-input-wrapper', @container)
     @placeholder =    $('.plush-placeholder', @inputContainer)
     @input =          $('input', @inputContainer)
+    @initialOption =  @getOption(false, true)
 
     # Option setting
     @queryData = @getQueryDataFromElement(@element.get(0))
@@ -39,13 +40,15 @@ class @Plush
     if @options.url?
       if !@searchWithAjax || (@searchWithAjax && @options.preload)
         @createListFromSource(true)
+      else
+        @checkInitialOption()
     else
       if $('optgroup', @element).length > 0
         @createListFromGroupedOptions()
       else
         @createListFromOptions()
-    @checkResults()
 
+    @checkResults()
     @setup()
     @setEventHandlers()
     return @
@@ -56,10 +59,11 @@ class @Plush
       @input.val $('option[selected]', @element).html()
 
   setup: ->
-    if @element.attr('placeholder')?
-      @element.prop('selectedIndex', -1)
-    else
-      @setOptionFor $('li:first-child', @list)
+    unless @initialOption.length > 0
+      if @element.attr('placeholder')? &&
+        @element.prop('selectedIndex', -1)
+      else
+        @setOptionFor $('li:first-child', @list)
 
   addClassnames: ->
     @list.addClass @options.listItemTemplate.replace(/\_/g, '-')
@@ -71,12 +75,15 @@ class @Plush
       @options[key] = @element.data(dataAttrName) || value
 
   setOptionFor: (listItem) ->
-    @placeholder.html listItem.data('label')
-    if @searchWithAjax
+    @setOption listItem.data('label'), listItem.data('value')
+
+  setOption: (label, value) ->
+    @placeholder.html label
+    if @options.url?
       @element.empty()
-      @createOption listItem.data('label'), listItem.data('value')
+      @createOption label, value
     else
-      @element.val listItem.data('value')
+      @element.val value
 
     @hide(true)
     @element.trigger 'change'
@@ -84,14 +91,19 @@ class @Plush
   createOption: (label, value, selected = true) ->
     unless @getOption(value).length > 0
       @element.append "<option value=#{value}#{ if selected then ' selected' else ''}>#{label}</option>"
-      @element.trigger 'change'
+
+    @element.trigger 'change'
 
   removeOption: (value) ->
     $("option[value=#{value}]", @element).remove()
     @element.trigger 'change'
 
-  getOption: (value, withSelected = false) ->
-    $option = $("[value=#{value}]#{if withSelected then '[selected=selected]' else ''}", @element)
+  getOption: (value = false, withSelected = false) ->
+    selector = [
+      (if value != false  then "[value=#{value}]"    else ''),
+      (if withSelected    then '[selected]' else '')
+    ].join('')
+    $option = $(selector, @element)
 
   focusAnchor: (anchor) ->
     anchor.focus()
@@ -119,12 +131,6 @@ class @Plush
 
   hasFocus: () ->
     $('*:focus', @container).length > 0
-
-  checkItemLabel: (item) ->
-    item['label'] = item[@options.labelMethod] unless item['label']?
-
-  createListItemFromJson: (item) ->
-    $.handlebar(@options.listItemTemplate, item)
 
   # --------------------------------------
   # Search methods
