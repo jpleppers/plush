@@ -4,7 +4,7 @@ gem 'rails', '~> 4.0.0'
 gem 'jquery-rails'
 
 
-group :developemnt do
+group :development do
   gem 'haml'
   gem 'coffee-rails'
   gem 'simple_form'

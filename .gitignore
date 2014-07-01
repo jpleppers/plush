@@ -19,14 +19,10 @@ tmp
 _yardoc
 doc/
 config/database.yml
-
-
-config/database.yml
 public/uploads/*
 .project
 pkg
 .yardoc
-test/dummy/config/database.yml
 test/dummy/public/assets
 .rvmrc
 zeus.json
