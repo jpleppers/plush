@@ -18,6 +18,11 @@ module Dummy
     # The default locale is :en and all translations from config/locales/*.rb,yml are auto loaded.
     # config.i18n.load_path += Dir[Rails.root.join('my', 'locales', '*.{rb,yml}').to_s]
     # config.i18n.default_locale = :de
+
+    # Possible fix for asset compilation race conditions in Travis, see: https://github.com/jfirebaugh/konacha/issues/123 and https://github.com/sstephenson/sprockets/pull/441
+    config.assets.configure do |env|
+      env.cache = ThreadSafe::Cache.new
+    end
   end
 end
 
