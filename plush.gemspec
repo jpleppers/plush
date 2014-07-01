@@ -8,10 +8,10 @@ Gem::Specification.new do |s|
   s.name        = "Plush Select"
   s.version     = Plush::VERSION
   s.authors     = ["Peter Leppers"]
-  s.email       = ["p.leppers@nedforce.nl"]
+  s.email       = ["j.p.leppers@gmail.com"]
   s.homepage    = "http://github.com/jpleppers/plush"
   s.summary     = " A jQuery based select and option enhancer"
-  s.description = "Plush Select "
+  s.description = "Plush select"
 
   s.files = Dir["{app,config,db,lib}/**/*", "MIT-LICENSE", "Rakefile", "README.rdoc"]
   s.test_files = Dir["test/**/*"]
