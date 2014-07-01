@@ -1,0 +1,28 @@
+{
+  "name": "Plush",
+  "description": "Plush turns your select inputs into rich dropwdown menus",
+  "version": "0.1.1",
+  "keywords": ["Plush", "Select", "Dropdown", "AJAX"],
+  "homepage": "",
+  "dependencies": {
+    "jquery": ">=1.7.0",
+  "devDependencies": {},
+  "license": ["MIT"],
+  "main": [
+    "./dist/plush.js",
+    "./dist/plush.css",
+  ],
+  "ignore": [
+    "app",
+    "compiled",
+    "lib",
+    "test",
+    "vendor",
+    ".travis.yml",
+    "Gemfile",
+    "Gemfile.lock",
+    "plush.gemspec",
+    "Rakefile",
+    "*.md"
+  ]
+}
